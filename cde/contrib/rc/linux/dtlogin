@@ -25,7 +25,7 @@ stop(){
 	if [ -n "$(pidof /usr/dt/bin/dtlogin)" ];
 	then
 		echo " * Stopping dtlogin..."
-		killall /usr/dt/bin/dtlogin
+		kill $(pidof /usr/dt/bin/dtlogin)
 	fi
 }
 
