@@ -12,11 +12,15 @@
 export PATH="/usr/dt/bin:$PATH"
 OPTIONS="-quiet -daemon"
 
+if [ -r /etc/default/locale ]; then
+        . /etc/default/locale
+        export LANG
+fi
+
 start(){
 	if [ -z "$(pidof /usr/dt/bin/dtlogin)" ];
 	then
 		echo " * Starting dtlogin..."
-		export LANG=C
 		/usr/dt/bin/dtlogin $OPTIONS
 	fi
 }
