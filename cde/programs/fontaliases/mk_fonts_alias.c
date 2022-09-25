@@ -187,6 +187,18 @@ static void iface_iso8859(bool is_user, bool is_bold) {
   }
 }
 
+static void iface_iso10646(bool is_user, bool is_bold) {
+  iface_iso8859(is_user, is_bold);
+
+  for (int i = 0; i < IFACE_FAL_SIZE; ++i) {
+    struct font_alias_t *pfa = &iface_fal[i];
+
+    pfa->font->rgstry = "iso10646";
+
+    pfa->alias->rgstry = pfa->font->rgstry;
+  }
+}
+
 static void iface_iso8859_11(bool is_user, bool is_bold) {
   iface_iso8859(is_user, is_bold);
 
@@ -348,6 +360,10 @@ static void print_iface(void (*fiface)(bool, bool), char *encdng) {
 
 static void print_iface_iso8859(char *encdng) {
   print_iface(iface_iso8859, encdng);
+}
+
+static void print_iface_iso10646(char *encdng) {
+  print_iface(iface_iso10646, encdng);
 }
 
 static void print_iface_iso8859_11(void) {
@@ -902,6 +918,20 @@ static void app_iso8859_partial(enum app_adstyl_spc_t adstyl_spc, bool is_bold,
   }
 }
 
+static void app_iso10646(enum app_adstyl_spc_t adstyl_spc, bool is_bold,
+    bool is_italic)
+{
+  app_iso8859_full(adstyl_spc, is_bold, is_italic);
+
+  for (int i = 0; i < APP_FAL_SIZE; ++i) {
+    struct font_alias_t *pfa = &app_fal[i];
+
+    pfa->font->rgstry = "iso10646";
+
+    pfa->alias->rgstry = pfa->font->rgstry;
+  }
+}
+
 static void app_iso8859_11(enum app_adstyl_spc_t adstyl_spc, bool is_bold,
     bool is_italic)
 {
@@ -1170,6 +1200,10 @@ static void print_app_iso8859_partial(char *encdng) {
   print_app(app_iso8859_partial, encdng);
 }
 
+static void print_app_iso10646(char *encdng) {
+  print_app(app_iso10646, encdng);
+}
+
 static void print_app_iso8859_11(void) {
   print_app(app_iso8859_11, "11");
 }
@@ -1318,6 +1352,7 @@ int main(int argc, char *argv[]) {
     else print_iface_iso8859(encdng);
   }
 
+  print_iface_iso10646("1");
   print_iface_iso8859_11();
   print_iface_koi8_r();
   print_iface_jisx0201_1976_0();
@@ -1335,6 +1370,7 @@ int main(int argc, char *argv[]) {
   for (int i = 0; i < sizeof(app_partial_encdng) / sizeof(char *); ++i)
     print_app_iso8859_partial(app_partial_encdng[i]);
 
+  print_app_iso10646("1");
   print_app_iso8859_11();
   print_app_koi8_r();
   print_app_jisx0201_1976_0();
