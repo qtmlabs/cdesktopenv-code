@@ -412,7 +412,6 @@ SetHourGlassCursor( Display *dpy, Window w )
     cursor = _DtGetHourGlassCursor(dpy);
 
     XDefineCursor(dpy, w, cursor);
-    XFreeCursor(dpy, cursor);
     XFlush(dpy);
 }
 
