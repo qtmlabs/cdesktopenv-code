@@ -211,6 +211,9 @@ static	char	AppName[16] = DTLOGIN;
 #  ifdef sun	/* default language under Solaris */
 #    define DEF_LANG    "C"
 #  endif
+#  ifdef __linux__
+#    define DEF_LANG    "en_US.UTF-8"
+#  endif
 #endif
 
 #ifndef DEF_LANG	/* set LANG to NULL if not already defined	   */
@@ -654,7 +657,7 @@ LoadDisplayResources( struct display *d )
 	CleanUpName (d->name, dpyName, sizeof (dpyName));
 	CleanUpName (d->class ? d->class : d->name, dpyClass, sizeof (dpyClass));
 
-	if((lang = getenv("LANG")) != NULL)
+	if((lang = getenv("LANG")) != NULL && strcmp(lang, "C") != 0)
 	   for (i = NUM_DISPLAY_RESOURCES - 1; i >= 0; i--)  {
 		if(strcmp(DisplayResources[i].name,"language") == 0){
 		  DisplayResources[i].default_value = lang;
