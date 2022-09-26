@@ -453,7 +453,6 @@ MakeLangList( void )
      */
 
     p = languageList;
-    strcpy( p, "C");
 
     signal (SIGALRM, MakeLangAbort);
     alarm ((unsigned) langListTimeout);
@@ -603,7 +602,7 @@ ScanNLSDir(char *dirname)
                  (strcmp(dp->d_name, "..") == 0) )
               continue;
 
-	    if (locale[0] != '.' &&
+	    if (locale[0] != '.' && strcmp(locale, "C") != 0 &&
                 LANGLISTSIZE > (int) (strlen(languageList)+strlen(locale)+2))
 	    {
 		(void) snprintf(locale_path, MAXPATHLEN, "%s/%s",
