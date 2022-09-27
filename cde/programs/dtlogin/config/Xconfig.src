@@ -123,7 +123,7 @@ XCOMM
 XCOMM  Dtlogin*userPath:          <path>
 
 #if defined(__linux__) || defined(CSRG_BASED)
-Dtlogin*userPath:          /bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:CDE_INSTALLATION_TOP/bin
+Dtlogin*userPath:          /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/games:/usr/games:CDE_INSTALLATION_TOP/bin
 #endif
 
 
