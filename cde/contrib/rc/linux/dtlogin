@@ -11,6 +11,7 @@
 
 export PATH="/usr/dt/bin:$PATH"
 OPTIONS="-quiet -daemon"
+DAEMON=/usr/dt/bin/dtlogin
 
 if [ -r /etc/default/locale ]; then
         . /etc/default/locale
@@ -18,18 +19,23 @@ if [ -r /etc/default/locale ]; then
 fi
 
 start(){
-	if [ -z "$(pidof /usr/dt/bin/dtlogin)" ];
+	if [ -z "$(pidof $DAEMON)" ];
 	then
 		echo " * Starting dtlogin..."
-		/usr/dt/bin/dtlogin $OPTIONS
+		$DAEMON $OPTIONS
 	fi
 }
 
 stop(){
-	if [ -n "$(pidof /usr/dt/bin/dtlogin)" ];
+	if [ -n "$(pidof $DAEMON)" ];
 	then
 		echo " * Stopping dtlogin..."
-		kill $(pidof /usr/dt/bin/dtlogin)
+		kill $(pidof $DAEMON)
+		sleep 1
+		if [ -n "$(pidof $DAEMON)" ]; then
+			echo " * dtlogin refused to stop, killing..."
+			kill -9 $(pidof $DAEMON)
+		fi
 	fi
 }
 
@@ -45,7 +51,7 @@ case "$1" in
 		start
 	;;
 	'status')
-		if [ -z "$(pidof /usr/dt/bin/dtlogin)" ];
+		if [ -z "$(pidof $DAEMON)" ];
 		then
 			echo "DTlogin is not currently running..."
 			exit 3
