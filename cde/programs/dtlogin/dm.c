@@ -89,7 +89,6 @@
  ***************************************************************************/
 
 static void CheckDisplayStatus( struct display *d) ;
-static void CheckRestartTime( void ) ;
 static void ChildNotify( int arg ) ;
 static void MarkDisplay( struct display *d) ;
 static void KillDisplay( struct display *d) ;
@@ -209,13 +208,6 @@ main( int argc, char **argv )
 		 pidFile, oldpid);
 	exit (1);
     }
-
-    /*
-     * Check if we are restarting too fast...
-     */
-     
-    CheckRestartTime();
-
 
     /*
      * Initialize error file, open XDMCP socket, and set up interrupt handlers.
@@ -1743,53 +1735,6 @@ GettyRunning( struct display *d )
     return rvalue;
 }
 
-
- 
-/***************************************************************************
- *
- *  CheckRestartTime
- *
- *  Check if enough time has elapsed since shutdown. 
- *
- *  This is primarily to work with /etc/shutdown.  When shutdown kills
- *  dtlogin (/etc/killall), init immediately restarts it.  Shutdown kills
- *  it again and init restarts it.  At each restart, the X-server may start
- *  on the local display and then subsequently be killed.  The user sees a
- *  flashing screen and sometimes the console is left in an unreset state.
- *
- *  When Dtlogin shuts down, it touches the access time on the Xservers
- *  file.  (MarkShutdownTime()).  This time is then used to determine if
- *  sufficient time has elapsed before restarting.
- *
- ***************************************************************************/
-
-static void
-CheckRestartTime( void )
-{
-    struct stat	statb;
-    int		sleeptime;
-    
-    if (servers[0] == '/' && stat(servers, &statb) != -1) {
-
-	Debug("Checking restart time.\n");
-	
-#ifdef OSFDEBUG
-/* only those other systems are this slow :-) */
-        sleeptime = 6 - (int) (time((time_t *) 0) - statb.st_atime);
-#else
-	sleeptime = 30 - (int) (time((time_t *) 0) - statb.st_atime);
-#endif
-	
-	if ( sleeptime > 30 ) sleeptime = 30;
-	
-	if ( sleeptime > 0 ) {
-	    Debug("Restarting too soon after shutdown. Sleeping %d seconds.\n",
-	           sleeptime);
-	    sleep (sleeptime);
-	}
-    }
-
-}
 
  
 /***************************************************************************
