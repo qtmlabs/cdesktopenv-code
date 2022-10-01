@@ -19,7 +19,7 @@ else
 libDtSearch_la_LDFLAGS = $(AM_LDFLAGS) -version-info 3:0:1
 endif
 
-libDtSearch_la_LIBADD = raima/libraima.la
+libDtSearch_la_LIBADD = ../DtSvc/libDtSvc.la raima/libraima.la $(XTOOLLIB)
 
 libDtSearch_la_SOURCES = apndext.c	ausdopen.c	ausexit.c \
 			 bmstrstr.c	boolpars.c	boolsrch.c \

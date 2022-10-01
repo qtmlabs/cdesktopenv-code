@@ -7,6 +7,10 @@ libDtMrm_la_CFLAGS = $(AM_CFLAGS) -I../DtTerm/Term -I../DtTerm/TermPrim -I../DtH
 
 libDtMrm_la_SOURCES = DtMrm.c
 
+libDtMrm_la_LIBADD = ../DtSvc/libDtSvc.la ../DtHelp/libDtHelp.la \
+		     ../DtTerm/libDtTerm.la ../DtPrint/libDtPrint.la \
+		     ../DtWidget/libDtWidget.la $(XTOOLLIB)
+
 # in order to try to keep lib versions the same across platforms, (2.1.0)
 if BSD
 libDtMrm_la_LDFLAGS = $(AM_LDFLAGS) -version-info 2:1:0

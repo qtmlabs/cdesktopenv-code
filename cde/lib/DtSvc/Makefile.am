@@ -2,6 +2,9 @@ MAINTAINERCLEANFILES = Makefile.in
 
 lib_LTLIBRARIES = libDtSvc.la
 
+libDtSvc_la_LIBADD = ../tt/lib/libtt.la ../DtXinerama/libDtXinerama.la \
+		     $(XTOOLLIB)
+
 # in order to try to keep lib versions the same across platforms, (2.1.0)
 if BSD
 libDtSvc_la_LDFLAGS = $(AM_LDFLAGS) -version-info 2:1:0

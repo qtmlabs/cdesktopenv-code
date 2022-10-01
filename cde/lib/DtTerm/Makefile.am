@@ -7,7 +7,7 @@ lib_LTLIBRARIES = libDtTerm.la
 libDtTerm_la_SOURCES =
 
 libDtTerm_la_LIBADD = Term/libTerm.la TermPrim/libTermPrim.la \
-		       TermView/libTermView.la
+		       TermView/libTermView.la ../DtSvc/libDtSvc.la $(XTOOLLIB)
 
 if OPENBSD
 libDtTerm_la_LIBADD += -lutil
