@@ -42,7 +42,7 @@ libDtHelp_la_SOURCES = Actions.c       AsciiSpc.c      Callbacks.c \
 
 # in order to try to keep lib versions the same across platforms, (2.1.0)
 if BSD
-libDtHelp_la_LDFLAGS = -version-info 2:1:0
+libDtHelp_la_LDFLAGS = $(AM_LDFLAGS) -version-info 2:1:0
 else
-libDtHelp_la_LDFLAGS = -version-info 3:0:1
+libDtHelp_la_LDFLAGS = $(AM_LDFLAGS) -version-info 3:0:1
 endif

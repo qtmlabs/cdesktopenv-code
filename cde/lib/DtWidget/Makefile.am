@@ -10,9 +10,9 @@ libDtWidget_la_CFLAGS = $(AM_CFLAGS) -DI18N_MSG -DMULTIBYTE
 
 # in order to try to keep lib versions the same across platforms, (2.1.0)
 if BSD
-libDtWidget_la_LDFLAGS = -version-info 2:1:0
+libDtWidget_la_LDFLAGS = $(AM_LDFLAGS) -version-info 2:1:0
 else
-libDtWidget_la_LDFLAGS = -version-info 3:0:1
+libDtWidget_la_LDFLAGS = $(AM_LDFLAGS) -version-info 3:0:1
 endif
 
 if SOLARIS

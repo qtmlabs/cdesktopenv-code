@@ -14,9 +14,9 @@ libDtSearch_la_CFLAGS = $(AM_CFLAGS) -DI18N_MSG -DMULTIBYTE -I./raima \
 
 # in order to try to keep lib versions the same across platforms, (2.1.0)
 if BSD
-libDtSearch_la_LDFLAGS = -version-info 2:1:0
+libDtSearch_la_LDFLAGS = $(AM_LDFLAGS) -version-info 2:1:0
 else
-libDtSearch_la_LDFLAGS = -version-info 3:0:1
+libDtSearch_la_LDFLAGS = $(AM_LDFLAGS) -version-info 3:0:1
 endif
 
 libDtSearch_la_LIBADD = raima/libraima.la
