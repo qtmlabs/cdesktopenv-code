@@ -193,7 +193,6 @@ determine_libs(AbmfLibs libs, ABObj project, AB_OS_TYPE osType)
 	lib_add(libs, LibX11, ABMF_LIB_APPEND, ABMF_LIB_REJECT_DUP);
 	lib_add(libs, LibICE, ABMF_LIB_APPEND, ABMF_LIB_REJECT_DUP);
 	lib_add(libs, LibSM, ABMF_LIB_APPEND, ABMF_LIB_REJECT_DUP);
-	lib_add(libs, LibXp, ABMF_LIB_APPEND, ABMF_LIB_REJECT_DUP);
     }
 
     if (projData->has_terminal)
@@ -594,7 +593,7 @@ write_lnx_params(File makeFile, AbmfLibs libs)
 "\n"
 "        CDEBUGFLAGS = -g\n"
 "        COPTFLAGS = -O2\n"
-"        SYS_LIBRARIES = -lgen -lm\n"
+"        SYS_LIBRARIES = -lm\n"
 "        CDE_LIBPATH = /usr/dt/lib\n"
 "        CDE_LDFLAGS = -L$(CDE_LIBPATH)\n"
 "        ALLX_LIBPATH = /X11/lib\n"
