@@ -23,7 +23,7 @@ SUBDIRS = HardCopy \
 
 lib_LTLIBRARIES = libDtMmdb.la
 
-libDtMmdb_la_SOURCES =
+libDtMmdb_la_SOURCES = dummy.cxx
 
 libDtMmdb_la_LIBADD = HardCopy/libHardCopy.la \
 		      StyleSheet/libStyleSheet.la \
