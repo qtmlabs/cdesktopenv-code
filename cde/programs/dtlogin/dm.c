@@ -966,7 +966,9 @@ StartDisplay(
 	Debug("Attempting to start server for %s.  startTries = %d\n", 
 	        d->name, d->startTries);
 
-	if (d->serverPid == -1) {
+	if (d->serverPid == -1 && d->gettyLine &&
+	    strlen(d->gettyLine) > 0 && strcmp(d->gettyLine, "??") != 0) {
+
 	    static int bootup = 0;
 	    
 	    while (bootup++ < 5) {
