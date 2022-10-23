@@ -9,12 +9,7 @@ libcsa_la_CFLAGS = $(AM_CFLAGS) -DRFC_MIME -DLINE_COUNT -DV2 -DOW_I18N \
 
 libcsa_la_LIBADD = $(XTOOLLIB) $(TIRPCLIB)
 
-# in order to try to keep lib versions the same across platforms, (2.1.0)
-if BSD
-libcsa_la_LDFLAGS = $(AM_LDFLAGS) -version-info 2:1:0
-else
-libcsa_la_LDFLAGS = $(AM_LDFLAGS) -version-info 3:0:1
-endif
+libcsa_la_LDFLAGS = $(AM_LDFLAGS) -version-number 2:1:0
 
 if LINUX
 else
