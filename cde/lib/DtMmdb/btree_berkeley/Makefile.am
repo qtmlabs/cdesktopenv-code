@@ -2,7 +2,7 @@ MAINTAINERCLEANFILES = Makefile.in
 
 noinst_LTLIBRARIES = libbtree_berkeley.la
 
-libbtree_berkeley_la_CFLAGS = -DMEMMOVE -I..
+libbtree_berkeley_la_CFLAGS = $(AM_CFLAGS) -DMEMMOVE -I..
 
 libbtree_berkeley_la_SOURCES =  bt_close.c bt_conv.c bt_debug.c bt_delete.c \
 				bt_get.c bt_open.c bt_overflow.c bt_page.c \

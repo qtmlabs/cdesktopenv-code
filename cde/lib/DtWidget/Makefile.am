@@ -4,9 +4,9 @@ MAINTAINERCLEANFILES = Makefile.in
 
 lib_LTLIBRARIES = libDtWidget.la
 
-AM_CPPFLAGS = -DCDE_INSTALLATION_TOP=$(CDE_INSTALLATION_TOP) $(DT_INCDIR)
+AM_CPPFLAGS += -DCDE_INSTALLATION_TOP=$(CDE_INSTALLATION_TOP) $(DT_INCDIR)
 
-libDtWidget_la_CFLAGS = -DI18N_MSG -DMULTIBYTE
+libDtWidget_la_CFLAGS = $(AM_CFLAGS) -DI18N_MSG -DMULTIBYTE
 
 # in order to try to keep lib versions the same across platforms, (2.1.0)
 if BSD

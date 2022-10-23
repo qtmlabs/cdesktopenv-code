@@ -15,7 +15,7 @@ SDLBUILDSRC  = $(HTAG2)/build
 SDLUTILLIB   = $(HTAG2)/util/libutil.a
 SDLIFFILE    = $(HTAG2SRC)/help.if
 
-AM_CPPFLAGS = -I$(SDLPARSERSRC) -I$(SDLUTILSRC) \
+AM_CPPFLAGS += -I$(SDLPARSERSRC) -I$(SDLUTILSRC) \
 	    -I$(SDLELTDEFSRC) $(DT_INCDIR)
 
 # needed by parser/

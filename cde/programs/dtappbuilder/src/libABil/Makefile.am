@@ -12,7 +12,7 @@ noinst_LIBRARIES = libABil.a
 
 #noinst_PROGRAMS = bil_test
 
-libABil_a_CFLAGS = $(EXTRA_DEFINES) -I$(ABINCLUDES)
+libABil_a_CFLAGS = $(AM_CFLAGS) $(EXTRA_DEFINES) -I$(ABINCLUDES)
 
 libABil_a_LIBADD =
 
