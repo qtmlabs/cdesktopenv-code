@@ -10,12 +10,7 @@ libDtWidget_la_CFLAGS = $(AM_CFLAGS) -DI18N_MSG -DMULTIBYTE
 
 libDtWidget_la_LIBADD = ../DtSvc/libDtSvc.la $(XTOOLLIB)
 
-# in order to try to keep lib versions the same across platforms, (2.1.0)
-if BSD
-libDtWidget_la_LDFLAGS = $(AM_LDFLAGS) -version-info 2:1:0
-else
-libDtWidget_la_LDFLAGS = $(AM_LDFLAGS) -version-info 3:0:1
-endif
+libDtWidget_la_LDFLAGS = $(AM_LDFLAGS) -version-number 2:1:0
 
 if SOLARIS
 libDtWidget_la_CFLAGS += -DNO_REGCOMP

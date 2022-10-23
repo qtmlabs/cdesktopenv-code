@@ -5,12 +5,7 @@ lib_LTLIBRARIES = libDtSvc.la
 libDtSvc_la_LIBADD = ../tt/lib/libtt.la ../DtXinerama/libDtXinerama.la \
 		     $(XTOOLLIB)
 
-# in order to try to keep lib versions the same across platforms, (2.1.0)
-if BSD
-libDtSvc_la_LDFLAGS = $(AM_LDFLAGS) -version-info 2:1:0
-else
-libDtSvc_la_LDFLAGS = $(AM_LDFLAGS) -version-info 3:0:1
-endif
+libDtSvc_la_LDFLAGS = $(AM_LDFLAGS) -version-number 2:1:0
 
 
 # USe CPPFLAGS so it will apply to both C and C++ components
