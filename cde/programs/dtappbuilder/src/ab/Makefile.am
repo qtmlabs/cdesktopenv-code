@@ -49,7 +49,7 @@ dtbuilder_LDADD = ../libABil/libABil.a  ../libABobjXm/libABobjXm.a  \
         $(LIBTT) $(LIBXIN) -lUil $(MRESOURCELIB) $(XTOOLLIB) ${X_LIB} \
 	$(UTILLIB)
 
-dtbuilder_CFLAGS = -DPIXMAP_WORKAROUND $(ABINCLUDES)
+dtbuilder_CFLAGS = $(AM_CFLAGS) -DPIXMAP_WORKAROUND $(ABINCLUDES)
 
 dtbuilder_SOURCES = dtb_utils.c \
 		    appfw_ui.c \

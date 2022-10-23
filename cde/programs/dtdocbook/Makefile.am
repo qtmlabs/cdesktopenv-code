@@ -9,6 +9,6 @@ bin_PROGRAMS = dtdocbook2infolib
 
 AM_LDFLAGS = $(DTCLIENTLIBS) $(XTOOLLIB) 
 
-dtdocbook2infolib_CPPFLAGS = \
+dtdocbook2infolib_CPPFLAGS = $(AM_CPPFLAGS) \
 			     -DDTDCBK_DATAROOTDIR=\"$(dtdocbookdatadir)\" \
 			     -DINFOLIB_LIBEXECDIR=\"$(dtdocbooklibexecdir)/infolib\"
