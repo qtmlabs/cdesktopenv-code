@@ -1095,7 +1095,7 @@ Initialize(Widget ref_w, Widget w, Arg *args, Cardinal *num_args)
 	    int num_fonts;
 	    XFontStruct **fonts;
 	    char **fontNames;
-	    char boldFontNames[BUFSIZ];
+	    char *boldFontNames = malloc(64 * 1024);
 	    char *c1;
 	    char *c2;
 	    int i1;
@@ -1151,6 +1151,7 @@ Initialize(Widget ref_w, Widget w, Arg *args, Cardinal *num_args)
 		    &missingCharsetList,
 		    &missingCharsetCount,
 		    (char **) 0);
+	    free(boldFontNames);
 	    if (missingCharsetCount > 0) {
 		int i;
 
