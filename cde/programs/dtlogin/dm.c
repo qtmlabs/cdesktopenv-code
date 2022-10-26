@@ -1009,7 +1009,7 @@ StartDisplay(
  	if (d->utmpId == NULL) {
  	    int i;
  	    char *p, *q;
- 	    struct utmp *u;
+ 	    struct utmpx *u;
  	    
  	    d->utmpId = malloc(sizeof(u->ut_id) +1);
  
