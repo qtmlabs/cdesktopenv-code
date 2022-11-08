@@ -1451,10 +1451,6 @@ StartGetty( struct display *d )
 
     d->serverPid = -1;
 
-#if !defined(GETTYPATH)
-    return FALSE;
-#else
-
     /*
      * check to see if we have a valid device (at least a non-null name)...
      */
@@ -1482,6 +1478,9 @@ StartGetty( struct display *d )
 	return TRUE;
     }
 
+#if !defined(GETTYPATH)
+    return FALSE;
+#else
     
     /*
      * there is no getty running on the device, try to start one...
