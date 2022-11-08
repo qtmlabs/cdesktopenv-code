@@ -74,6 +74,8 @@
 #include <sys/kbd.h>
 #endif
 
+#include <sys/file.h>
+
 #ifndef sigmask
 #define sigmask(m)  (1 << (( m-1)))
 #endif
@@ -805,6 +807,7 @@ StartDisplay(
 {
     waitType  status;
     int	pid;
+    int lock = -1;
     char* authFile_str;
     char start_fbconsole[1024];
     char buff[128];
@@ -883,14 +886,13 @@ StartDisplay(
 
 	/*
 	 *  initialize d->utmpId. Check to see if anyone else is using
-	 *  the requested ID. Always allow the first request for "dt" to
-	 *  succeed as utmp may have become corrupted.
+	 *  the requested ID.
 	 */
 
 	if (d->utmpId == NULL) {
-	    static int firsttime = 1;
 	    static char letters[] = "0123456789abcdefghijklmnopqrstuvwxyzz";
 	    char *t;	    
+	    char lockpath[40];
 
 	    d->utmpId = malloc(5);
 	    strcpy(d->utmpId, UTMPREC_PREFIX);
@@ -899,13 +901,23 @@ StartDisplay(
 	    t = letters;
 	    
 	    do {
-		if ( firsttime || UtmpIdOpen(d->utmpId)) {
-		    firsttime = 0;
-		    break;
-		}		
-		else {
-		    strncpy(&(d->utmpId[strlen(d->utmpId)]), t++, 1);
-    		}
+		snprintf(lockpath, sizeof(lockpath), "/var/dt/.%s-utmp.lock", d->utmpId);
+
+		lock = open(lockpath, O_RDWR | O_CREAT | O_CLOEXEC, S_IRUSR | S_IWUSR);
+
+		if (lock == -1)
+		    goto fail;
+
+		if (flock(lock, LOCK_EX|LOCK_NB) == -1) {
+		    close(lock);
+		    lock = -1;
+		    goto fail;
+		}
+
+		break;
+
+fail:
+		strncpy(&(d->utmpId[strlen(d->utmpId)]), t++, 1);
 	    } while (*t != '\0');
 
 	    if (*t == '\0') {
@@ -1163,6 +1175,7 @@ StartDisplay(
     case -1:
 	break;
     default:
+	close(lock);
 	Debug ("Child manager process started for %s. pid = %d\n", 
 		d->name, pid);
 	d->pid = pid;
