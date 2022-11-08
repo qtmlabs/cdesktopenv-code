@@ -160,6 +160,8 @@ XCOMM  Dtlogin*openTimeout:       <seconds>
 #if defined(CSRG_BASED) || defined(__linux__)
 Dtlogin*openTimeout:    15
 Dtlogin*serverAttempts: 3
+#endif
+#if defined(CSRG_BASED)
 Dtlogin*wakeupInterval: 20
 #endif
 
