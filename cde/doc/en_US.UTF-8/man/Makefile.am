@@ -2331,3 +2331,8 @@ man3/DtSearchFreeMessages.3: man3/DtSearchHasMessages.3
 man3/DtSearchGetMessages.3: man3/DtSearchHasMessages.3
 	echo .so $< >$@
 
+install-data-hook:
+	cd $(DESTDIR)$(prefix) && rm -f man && $(LN_S) $(mandir) man
+
+uninstall-hook:
+	cd $(DESTDIR)$(prefix) && rm -f man
