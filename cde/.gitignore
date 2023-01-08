@@ -820,6 +820,7 @@ programs/dtinfo/tools/misc/treeres
 # programs/dtlogin
 programs/dtlogin/config/0015.sun.env
 programs/dtlogin/config/0060.dtsysenv
+programs/dtlogin/config/0070.systemd
 programs/dtlogin/config/Dtlogin
 programs/dtlogin/config/Xaccess
 programs/dtlogin/config/Xconfig
