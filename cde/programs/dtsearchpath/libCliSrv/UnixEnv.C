@@ -66,7 +66,7 @@ UnixEnvironment::UnixEnvironment()
 #elif defined(_AIX)
 	manpath = "/usr/share/man:/usr/lpp/info";
 #elif defined(__linux__)
-        manpath = "/usr/share/man/%L:/usr/share/man:/usr/contrib/man/%L:/usr/contrib/man:/usr/local/man/%L:/usr/local/man";
+        manpath = "/usr/share/man/%L:/usr/share/man:/usr/local/share/man/%L:/usr/local/share/man";
 #elif defined(__OpenBSD__)
 	manpath = "/usr/share/man:/usr/X11R6/man:/usr/local/man:/usr/ports/infrastructure/man";
 #elif defined(__FreeBSD__)
