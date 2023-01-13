@@ -28,7 +28,7 @@ AM_CXXFLAGS = \
 	      -DEXPAND_TEMPLATES \
 	      -I$(top_builddir)/lib/DtMmdb
 
-AM_LDFLAGS = $(XTOOLLIB) $(LIBMMDB) $(DTCLIENTLIBS)
+AM_LDFLAGS = $(XTOOLLIB) $(LIBMMDB) $(DTCLIENTLIBS) $(LMDBLIB)
 
 MixedGen_SOURCES = \
 		   MixedGen.C \
