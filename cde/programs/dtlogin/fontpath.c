@@ -39,6 +39,11 @@
 # include <signal.h>
 # include <X11/Xatom.h>
 # include <X11/Xmu/Error.h>
+#if defined(__FreeBSD__)
+# include <utmpx.h>
+#else
+# include <utmp.h>
+#endif
 # include "vgproto.h"
 
 /* 

@@ -1,7 +1,7 @@
 MAINTAINERCLEANFILES = Makefile.in
 
 if HAS_PAM_LIBRARY
-CPP_TARGET = dtsession
+CPP_TARGET = pam/dtsession
 dist_pam_DATA = $(CPP_TARGET)
 if FREEBSD
 pamdir = /usr/local/etc/pam.d
@@ -19,6 +19,6 @@ endif
 BUILT_SOURCES = $(CPP_TARGET)
 CLEANFILES = $(CPP_TARGET)
 
-dtsession: dtsession.src
+pam/dtsession: pam/dtsession.src
 	$(RM) $@
 	$(GENCPP) -P -DXCOMM=# $(AM_CPPFLAGS) $< > $@

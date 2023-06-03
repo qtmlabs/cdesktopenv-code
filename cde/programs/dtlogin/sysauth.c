@@ -79,11 +79,7 @@
 
 #if defined(PAM) || defined(HAS_PAM_LIBRARY)
 #include	<security/pam_appl.h>
-#ifdef PAM
 #include        "pam_svc.h"
-#else
-#include	<Dt/SvcPam.h>
-#endif
 #endif
 
 #ifdef _AIX
@@ -179,8 +175,6 @@ Audit( struct passwd *p, char *msg, int errnum )
 int 
 Authenticate( struct display *d, char *name, char *passwd, char **msg )
 {
-   extern char *progName;
-
    int	status;
    char* ttyLine = d->gettyLine;
 
@@ -214,11 +208,13 @@ Authenticate( struct display *d, char *name, char *passwd, char **msg )
     */
 
 #if defined(PAM) || defined(HAS_PAM_LIBRARY)
+    status =
 #ifdef PAM
-    status = PamAuthenticate("dtlogin", d->name, passwd, name, ttyLine);
+        PamAuthenticate
 #else
-    status = _DtSvcPamAuthenticate(progName, name, d->name, passwd);
+        _DtAuthentication
 #endif
+        ("dtlogin", d->name, passwd, name, ttyLine);
 
     switch(status) {
         case PAM_SUCCESS:

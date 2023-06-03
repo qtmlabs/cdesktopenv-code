@@ -16,8 +16,8 @@ CPP_TARGETS = 0060.dtsysenv Dtlogin Xaccess Xconfig Xconfig.con	\
 
 
 if HAS_PAM_LIBRARY
-CPP_TARGETS += dtlogin
-dist_pam_DATA = dtlogin
+CPP_TARGETS += pam/dtlogin
+dist_pam_DATA = pam/dtlogin
 if FREEBSD
 pamdir = /usr/local/etc/pam.d
 PAM_AUTHENTICATION_MODULE = /usr/local/lib/security/pam_pwauth_suid.so
@@ -53,16 +53,6 @@ endif
 
 if BSD
 AM_CPPFLAGS += -DCSRG_BASED
-endif
-
-AM_CPPFLAGS += -DSESSREG=$(SESSREG)
-
-if SET_UTMP_FILE
-AM_CPPFLAGS += -DUTMP_FLAG="-u\ $(UTMP_FILE)"
-endif
-
-if SET_WTMP_FILE
-AM_CPPFLAGS += -DWTMP_FLAG="-w\ $(WTMP_FILE)"
 endif
 
 BUILT_SOURCES = $(CPP_TARGETS)
@@ -178,6 +168,7 @@ home.session: home.session.src
 	$(RM) $@
 	$(GENCPP) -P -DXCOMM=# $(AM_CPPFLAGS) $< > $@
 
-dtlogin: dtlogin.src
+pam/dtlogin: pam/dtlogin.src
 	$(RM) $@
 	$(GENCPP) -P -DXCOMM=# $(AM_CPPFLAGS) $< > $@
+

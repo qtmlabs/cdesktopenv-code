@@ -1903,7 +1903,6 @@ if ( session_menu != NULL ) {
 
     }
 
-#if 0
     /*
      *  [ No Windows ] menu pane...
      */
@@ -1921,7 +1920,6 @@ if ( session_menu != NULL ) {
     if (getenv(LOCATION) == NULL || strcmp(getenv(LOCATION), "local") != 0 )
         XtSetSensitive(options_item[j], False);
     j++;
-#endif
 
 
     /* 
