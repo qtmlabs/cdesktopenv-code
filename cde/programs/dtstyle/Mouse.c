@@ -318,10 +318,8 @@ build_mouseDialog( Widget shell )
 					   nmap);
     if ( mouse.numButtons == 2 )
           mouse.type = POINTER2B;
-    else if  ( mouse.numButtons == 3 || mouse.numButtons == 5 ) 
-        mouse.type = POINTER3B;
     else
-        mouse.type = 99;
+        mouse.type = POINTER3B;
     /* choose a bitmap based on button mapping   *
      * and number of buttons                     */
 
@@ -1304,8 +1302,6 @@ reverseToggleCB(
 	    mouse.pixmapSel = mouse.b3_revSel;
 	    for(i = 0, j = 3; i < 3; i++, j--)
 	      mouse.new_map_return[i] = j;
-	    mouse.new_map_return[3] = 5;
-	    mouse.new_map_return[4] = 4;
 	  }
 	else
 	  {
@@ -1316,8 +1312,6 @@ reverseToggleCB(
 	    mouse.pixmapSel = mouse.b3Sel;
 	    for(i = 0, j = 1; i < 3; i++, j++)
 	      mouse.new_map_return[i] = j;
-	    mouse.new_map_return[3] = 4;
-	    mouse.new_map_return[4] = 5;
 	  }
       }
   else     /* 2B mouse */

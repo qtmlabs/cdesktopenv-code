@@ -257,9 +257,7 @@ process_event()
 	}
 
 	set_error_handler(_Tt_desktop::io_error_proc);
-	if (0 == sigsetjmp(io_exception, 1)) {
-		CALLX11(XFlush)(priv->xd);
-	} else {
+	if (0 != sigsetjmp(io_exception, 1)) {
 		priv->xd = (Display *)0;
 		ret_val = 0;
 	}
