@@ -2587,7 +2587,7 @@ SmExit (
 	  smXSMP.saveState.shutdown &&
 	  !smXSMP.saveState.shutdownCanceled)
 	XSMPExit ();
-      exit(exitStatus);
+      _exit(exitStatus);
     }
   else
     return;

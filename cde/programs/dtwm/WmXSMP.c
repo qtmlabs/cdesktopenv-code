@@ -126,9 +126,10 @@ static char *getXSMPResource(ClientData *, int, char *);
 static void getClientGeometry(ClientData *, int *, int *,
 			      unsigned int *, unsigned int *);
 static Boolean getProxyClientInfo(ClientData *, ProxyClientInfo *);
-static Bool cmpProxyClientProc(XrmDatabase *, XrmBindingList,
+static Bool fillClientIDProc(XrmDatabase *, XrmBindingList,
 			       XrmQuarkList, XrmRepresentation *,
 			       XrmValue *, XPointer);
+static Bool cmpProxyClient(char *clientID, ProxyClientInfo *proxyClientInfo);
 static char *findProxyClientID(ClientData *);
 static Boolean findXSMPClientDBMatch(ClientData *, char **);
 static Boolean findProxyClientDBMatch(ClientData *, char **);
@@ -495,21 +496,40 @@ getProxyClientInfo(ClientData *pCD, ProxyClientInfo *proxyClientInfo)
     return True;
 }
 
-/*
- *  IMPORTANT: This function is called by XrmEnumerateDatabase().
- *  It calls other Xrm*() functions - if dtwm is threaded, THIS
- *  WILL HANG.  For now, dtwm is NOT threaded, so no problem.
- */
 static Bool
-cmpProxyClientProc(XrmDatabase *clientDB, XrmBindingList bindingList,
+fillClientIDProc(XrmDatabase *clientDB, XrmBindingList bindingList,
 		   XrmQuarkList quarkList, XrmRepresentation *reps,
 		   XrmValue *value, XPointer uData)
+{
+    static int i;
+    int nList;
+    char *clientID = value->addr;
+    char ***pClientIDList = (char ***) uData;
+    char **clientIDList = *pClientIDList;
+
+    if (!(clientID && *clientID)) return FALSE;
+
+    if (clientIDList) ++i;
+    else i = 0;
+
+    nList = 2 + i;
+
+    if (i < 0 || nList < 2) return TRUE;
+
+    *pClientIDList = realloc(*pClientIDList, nList * sizeof(char *));
+    clientIDList = i + *pClientIDList;
+    clientIDList[0] = clientID;
+    clientIDList[1] = NULL;
+
+    return FALSE;
+}
+
+static Bool
+cmpProxyClient(char *clientID, ProxyClientInfo *proxyClientInfo)
 {
     char *clientScreen;
     char *wmCommand;
     char *wmClientMachine;
-    char *clientID = (char *)value->addr;
-    ProxyClientInfo *proxyClientInfo = (ProxyClientInfo *)uData;
 
     if (((wmCommand =
 	  getClientResource(clientID, wmCommandStr)) == (char *)NULL) ||
@@ -525,10 +545,7 @@ cmpProxyClientProc(XrmDatabase *clientDB, XrmBindingList bindingList,
 	((wmClientMachine =
 	  getClientResource(clientID, wmClientMachineStr)) == (char *)NULL) ||
 	(strcmp(proxyClientInfo->wmClientMachine, wmClientMachine) == 0))
-    {
-	proxyClientInfo->clientID = clientID;
 	return TRUE;
-    }
 
     return FALSE;
 }
@@ -537,7 +554,9 @@ static char *
 findProxyClientID(ClientData *pCD)
 {
     ProxyClientInfo proxyClientInfo;
-    char *clientID = (char *)NULL;
+    int i;
+    char *clientID = NULL;
+    char **clientIDList = NULL;
     static XrmName proxyName[2] = {NULLQUARK, NULLQUARK};
     static XrmClass proxyClass[2] = {NULLQUARK, NULLQUARK};
 
@@ -551,18 +570,23 @@ findProxyClientID(ClientData *pCD)
      *  We need to match the screen and
      *  the WM_COMMAND and WM_CLIENT_MACHINE properties.
      */
-    if (!getProxyClientInfo(pCD, &proxyClientInfo))
-	return clientID;
+    if (!getProxyClientInfo(pCD, &proxyClientInfo)) return clientID;
 
-    if (XrmEnumerateDatabase(wmGD.clientResourceDB, proxyName, proxyClass,
-			     XrmEnumOneLevel, cmpProxyClientProc,
-			     (XPointer)&proxyClientInfo))
-	clientID = proxyClientInfo.clientID;
+    XrmEnumerateDatabase(wmGD.clientResourceDB, proxyName, proxyClass,
+		    XrmEnumOneLevel, fillClientIDProc, (XPointer)&clientIDList);
 
-    if (proxyClientInfo.wmCommand)
-	free(proxyClientInfo.wmCommand);
-    if (proxyClientInfo.wmClientMachine)
-	free(proxyClientInfo.wmClientMachine);
+    for (i = 0; clientIDList && clientIDList[i]; ++i)
+    {
+	if (cmpProxyClient(clientIDList[i], &proxyClientInfo))
+	{
+	    clientID = clientIDList[i];
+	    break;
+	}
+    }
+
+    if (proxyClientInfo.wmCommand) free(proxyClientInfo.wmCommand);
+    if (proxyClientInfo.wmClientMachine) free(proxyClientInfo.wmClientMachine);
+    if (clientIDList) free(clientIDList);
 
     return clientID;
 }
