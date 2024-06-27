@@ -4,4 +4,4 @@ noinst_LTLIBRARIES = libbtree.la
 
 libbtree_la_CXXFLAGS = -I..
 
-libbtree_la_SOURCES = mmdb_btree.C
+libbtree_la_SOURCES = btree.C

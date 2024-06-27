@@ -69,9 +69,9 @@
 #endif
 
 #include <cstdlib>
+#include <lmdb.h>
 
 #include "dstr/index_agent.h"
-#include "btree_berkeley/db.h"
 
 
 class btree : public index_agent
@@ -91,12 +91,14 @@ public:
    istream& asciiIn(istream& in);
 
 protected:
-   DBT key_DBT;
-   DB* btree_DB;
-   BTREEINFO btree_info;
+   MDB_val key_DBT;
+   MDB_dbi btree_DB;
+   MDB_env *btree_env;
 
 protected:
    void data_t_2_DBT(data_t& w);
+   MDB_txn *txn_begin(unsigned int flags = 0);
+   void txn_commit(MDB_txn *txn);
 };
 
 #endif

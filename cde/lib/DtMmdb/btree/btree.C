@@ -48,44 +48,45 @@
  */
 
 
-#include "btree/mmdb_btree.h"
+#include "btree/btree.h"
 
 
 btree::btree(const char* store_name)
 {
-// let the package figure out all these parameters
-   btree_info.flags = 0;
-   btree_info.cachesize = 0;
-   btree_info.maxkeypage = 0;
-   btree_info.minkeypage = 0;
-   btree_info.psize = 0;
-   btree_info.compare = NULL;
-   btree_info.prefix = NULL;
-   btree_info.lorder = 0;
+   int err;
+   MDB_txn *txn;
 
-   key_DBT.data = 0;
-   key_DBT.size = 0;
+   key_DBT.mv_data = 0;
+   key_DBT.mv_size = 0;
 
-   int mode = O_CREAT|O_RDWR;
+   if ((err = mdb_env_create(&btree_env)))
+      throw(stringException(mdb_strerror(err)));
 
-   //btree_DB = dbopen(store_name, mode, 0640, DB_BTREE, &btree_info);
-   btree_DB = dbopen(store_name, mode, 0640, DB_BTREE, NULL);
+   if ((err = mdb_env_open(btree_env, store_name, MDB_NOSUBDIR | MDB_NOSYNC,
+                           0640)))
+      throw(stringException(mdb_strerror(err)));
 
-   if ( btree_DB == 0 )
-      throw(stringException("btree dbopen failed"));
+   txn = txn_begin();
+
+   if ((err = mdb_dbi_open(txn, NULL, 0, &btree_DB))) {
+      mdb_txn_abort(txn);
+      throw(stringException(mdb_strerror(err)));
+   }
+
+   txn_commit(txn);
 }
 
 btree::~btree()
 {
-   if ( btree_DB->sync(btree_DB, 0) == RET_ERROR ) {
-      cerr << "btree sync failed";
+   int err;
+
+   if ((err = mdb_env_sync(btree_env, 0))) {
+      cerr << mdb_strerror(err);
       std::exit(1);
    }
 
-   if ( btree_DB->close(btree_DB) == RET_ERROR ) {
-      cerr << "btree close failed";
-      std::exit(1);
-   }
+   mdb_dbi_close(btree_env, btree_DB);
+   mdb_env_close(btree_env);
 }
 
 void btree::clean()
@@ -97,13 +98,13 @@ void btree::data_t_2_DBT(data_t& w)
 {
    switch (w.flag) {
      case data_t::INT:
-      key_DBT.data = &w.key.int_key;
-      key_DBT.size = sizeof(w.key.int_key);
+      key_DBT.mv_data = &w.key.int_key;
+      key_DBT.mv_size = sizeof(w.key.int_key);
       break;
 
      case data_t::STRING:
-      key_DBT.data = w.key.str_key;
-      key_DBT.size = strlen(w.key.str_key);
+      key_DBT.mv_data = w.key.str_key;
+      key_DBT.mv_size = strlen(w.key.str_key);
       break;
 
      case data_t::VOID:
@@ -113,74 +114,78 @@ void btree::data_t_2_DBT(data_t& w)
 
 Boolean btree::insert(data_t& w)
 {
+   int err;
+   MDB_txn *txn;
+
    data_t_2_DBT(w);
 
-   DBT data_DBT;
-   data_DBT.data = &w.dt;
-   data_DBT.size = sizeof(w.dt);
+   MDB_val data_DBT;
+   data_DBT.mv_data = &w.dt;
+   data_DBT.mv_size = sizeof(w.dt);
 
-   //int status = btree_DB->put(btree_DB, &key_DBT, &data_DBT, R_NOOVERWRITE);
-   int status = btree_DB->put(btree_DB, &key_DBT, &data_DBT, 0);
+   txn = txn_begin();
 
-   switch (status) {
-     case RET_ERROR:
-        throw(stringException("btree put failed"));
-	break;
+   err = mdb_put(txn, btree_DB, &key_DBT, &data_DBT, 0);
 
-     case RET_SPECIAL:
-        throw(stringException("btree put: dup key"));
-	break;
-
-     case RET_SUCCESS:
-        return true;
+   if (err && err != MDB_MAP_FULL && err != MDB_TXN_FULL) {
+      mdb_txn_abort(txn);
+      throw(stringException(mdb_strerror(err)));
    }
 
-   return false;
+   txn_commit(txn);
+
+   if (err) {
+      cerr << mdb_strerror(err);
+      return false;
+   }
+
+   return true;
 }
 
 Boolean btree::remove(data_t& w)
 {
+   int err;
+   MDB_txn *txn;
+
    data_t_2_DBT(w);
 
-   int status = btree_DB->del(btree_DB, &key_DBT, 0);
+   txn = txn_begin();
 
-   switch (status) {
-     case RET_ERROR:
-        throw(stringException("btree delete failed"));
-	break;
-
-     case RET_SPECIAL:
-     case RET_SUCCESS:
-        return true;
+   if ((err = mdb_del(txn, btree_DB, &key_DBT, NULL))) {
+      mdb_txn_abort(txn);
+      throw(stringException(mdb_strerror(err)));
    }
 
-   return false;
+   txn_commit(txn);
+
+   return true;
 }
 
-Boolean btree::member(data_t& w) 
+Boolean btree::member(data_t& w)
 {
+   int err;
+   MDB_txn *txn;
+
    data_t_2_DBT(w);
-   DBT data_DBT;
+   MDB_val data_DBT;
 
-   int status = btree_DB->get(btree_DB, &key_DBT, &data_DBT, 0);
+   txn = txn_begin(MDB_RDONLY);
 
-   switch (status) {
-     case RET_ERROR:
-        throw(stringException("btree get failed"));
-	break;
+   err = mdb_get(txn, btree_DB, &key_DBT, &data_DBT);
 
-     case RET_SPECIAL:
-        return false;
+   mdb_txn_abort(txn);
 
-     case RET_SUCCESS:
-        if ( data_DBT.size != sizeof(w.dt) )
-           throw(stringException("btree get: tree corrupted"));
-
-        memcpy((char*)&w.dt, data_DBT.data, data_DBT.size);
-        return true;
+   if (err) {
+      if (err != MDB_NOTFOUND) throw(stringException(mdb_strerror(err)));
+      return false;
    }
 
-   return false;
+   if (data_DBT.mv_size != sizeof(w.dt))
+      throw(stringException("btree get: tree corrupted"));
+
+   memcpy((char*)&w.dt, data_DBT.mv_data, data_DBT.mv_size);
+
+   return true;
 }
 
 ostream& btree::asciiOut(ostream& out)
@@ -193,3 +198,19 @@ istream& btree::asciiIn(istream& in)
    return in;
 }
 
+MDB_txn *btree::txn_begin(unsigned int flags) {
+   int err;
+   MDB_txn *txn;
+
+   if ((err = mdb_txn_begin(btree_env, NULL, flags, &txn)))
+      throw(stringException(mdb_strerror(err)));
+
+   return txn;
+}
+
+void btree::txn_commit(MDB_txn *txn) {
+   int err;
+
+   if ((err = mdb_txn_commit(txn)))
+      throw(stringException(mdb_strerror(err)));
+}

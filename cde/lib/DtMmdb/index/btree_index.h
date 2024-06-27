@@ -53,7 +53,7 @@
 #define _btree_index_h 1
 
 #include "index/dyn_index.h"
-#include "btree/mmdb_btree.h"
+#include "btree/btree.h"
 
 class btree_index : public dyn_index
 {

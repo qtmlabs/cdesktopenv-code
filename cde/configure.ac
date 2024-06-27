@@ -492,6 +492,12 @@ AC_CHECK_LIB(jpeg, jpeg_read_header, [JPEGLIB="-ljpeg"],
              [${EXTRA_INCS} ${EXTRA_LIBS}])
 AC_SUBST(JPEGLIB)
 
+dnl lmdb
+AC_CHECK_LIB(lmdb, mdb_version, [LMDBLIB="-llmdb"],
+             [AC_MSG_ERROR([liblmdb not found, please install it])],
+             [${EXTRA_INCS} ${EXTRA_LIBS}])
+AC_SUBST(LMDBLIB)
+
 dnl Setup XTOOLLIB - we do it in this specific order to avoid ordering
 dnl issues
 XTOOLLIB=""
@@ -633,7 +639,6 @@ lib/DtMmdb/HardCopy/Makefile
 lib/DtMmdb/StyleSheet/Makefile
 lib/DtMmdb/api/Makefile
 lib/DtMmdb/btree/Makefile
-lib/DtMmdb/btree_berkeley/Makefile
 lib/DtMmdb/compression/Makefile
 lib/DtMmdb/diskhash/Makefile
 lib/DtMmdb/dstr/Makefile

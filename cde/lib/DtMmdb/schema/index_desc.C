@@ -164,7 +164,7 @@ handler* btree_index_desc::init_handler(object_dict& dict)
    (*(btree_index_handler*)v_handler_ptr) ->
             init_data_member(
                   (inv_lists_handler*)inv_handler,
-                  form("%s/%s", get_agent_nm(), dict.db_path())
+                  form("%s/%s", dict.db_path(), get_agent_nm())
                          );
 
    (*(btree_index_handler*)v_handler_ptr) -> set_selector(position) ;

@@ -4,7 +4,6 @@ SUBDIRS = HardCopy \
 	  StyleSheet \
 	  api \
 	  btree \
-	  btree_berkeley \
 	  compression \
 	  diskhash \
 	  dstr \
@@ -29,7 +28,6 @@ libDtMmdb_la_LIBADD = HardCopy/libHardCopy.la \
 		      StyleSheet/libStyleSheet.la \
 		      api/libapi.la \
 		      btree/libbtree.la \
-		      btree_berkeley/libbtree_berkeley.la \
 		      compression/libcompression.la \
 		      diskhash/libdiskhash.la \
 		      dstr/libdstr.la \
