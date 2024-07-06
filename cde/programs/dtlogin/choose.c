@@ -428,7 +428,7 @@ RunChooser (
     args = parseArgs (args, buf);
     ForEachChooserHost (&d->clientAddr,
 			d->connectionType,
-			(int (*)()) AddChooserHost,
+			AddChooserHost,
 			(char *) &args);
     env = systemEnv (d, (char *) 0, (char *) 0);
     if (d->authFile)

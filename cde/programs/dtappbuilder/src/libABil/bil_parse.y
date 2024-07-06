@@ -25,6 +25,8 @@
 
 #define TOK (bilP_load_get_token())
 
+void yyerror(char *);
+int yylex(void);
 %}
 /*
  * We assume that yacc spits out the symbols in the order they are 
