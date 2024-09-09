@@ -158,10 +158,8 @@ void activateCB_open_FindSet (Widget find_set_button, XtPointer cdata,
   XtFree(container_title);
   XtFree(directory_title);
   XtFree(dialog_title);
-  FreeIconSearchPathList(directories_list);
   XtVaSetValues (IconSelector, XmNuserData, cdata, NULL);
   UxPopupInterface (IconSelector, no_grab);
-  XmProcessTraversal(ISD_SelectedIconTextField, XmTRAVERSE_CURRENT);
   return;
 }
 

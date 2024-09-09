@@ -47,6 +47,7 @@ void    activateCB_ErrorDialog_OkButton( Widget  UxWidget,
 
 {
   XtDestroyWidget(XtParent(UxWidget));
+  *(Widget **)UxClientData = NULL;
 }
 
 /******************************************************************************/
@@ -63,7 +64,7 @@ void display_error_message (Widget parent, char *message)
 
   XtAddCallback( ErrorDialog, XmNokCallback,
           (XtCallbackProc) activateCB_ErrorDialog_OkButton,
-          (XtPointer) NULL );
+          (XtPointer) &ErrorDialog );
 
   XtVaSetValues (ErrorDialog,
                  RES_CONVERT(XmNdialogTitle, GETMESSAGE(6, 31, "Create Action - Error")),

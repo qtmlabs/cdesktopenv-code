@@ -50,6 +50,7 @@
 #include <X11/cursorfont.h>
 
 #include <Dt/Icon.h>
+#include <Dt/Wsm.h>
 
 #include "dtcreate.h"
 #include "UxXt.h"
@@ -144,7 +145,7 @@ int myscandir(char *pszDirName, struct dirent ***NameList, int Select(), int Com
      errPtr = XtMalloc((strlen(msgPtr) + strlen(fmtPtr) +
 			strlen(pszDirName) + 1) * sizeof(char));
      sprintf(errPtr, fmtPtr, msgPtr, pszDirName);
-     display_error_message(CreateActionAppShell, errPtr);
+     display_error_message(IconSelector, errPtr);
      XtFree(errPtr);
      return(0);
   }
@@ -245,7 +246,7 @@ struct dirent **build_dirent_list (char *filter, int *filecount)
      errPtr = XtMalloc((strlen(msgPtr) + strlen(fmtPtr) +
 			strlen(dirname) + 1) * sizeof(char));
      sprintf(errPtr, fmtPtr, msgPtr, dirname);
-     display_error_message(CreateActionAppShell, errPtr);
+     display_error_message(IconSelector, errPtr);
      XtFree(errPtr);
      namelist = NULL;
   }
@@ -1327,11 +1328,92 @@ void    resizeCB_clipWindow( Widget UxWidget,
   printf("icon_count = %d\n", icon_count);
 #endif
 
-  increment = (int)height / icon_count;
+  increment = icon_count > 0 ? (int)height / icon_count : height;
   XtVaSetValues(widvScrollbar, XmNincrement, increment, NULL);
 
   return;
 
+}
+
+static void mapCB_icon_selection_dialog(Widget UxWidget,
+                                        XtPointer UxClientData,
+                                        XtPointer UxCallbackArg)
+{
+  DtWsmRemoveWorkspaceFunctions(UxDisplay, XtWindow(XtParent(UxWidget)));
+}
+
+static void focusCB_icon_selection_dialog(Widget UxWidget,
+                                        XtPointer UxClientData,
+                                        XtPointer UxCallbackArg)
+{
+  char *initial_filter;
+  Widget descendant;
+
+  XtRemoveCallback(UxWidget, XmNfocusCallback, focusCB_icon_selection_dialog,
+                   NULL);
+
+  TurnOnHourGlassAllWindows();
+
+  XmProcessTraversal(ISD_SelectedIconTextField, XmTRAVERSE_CURRENT);
+
+  /******************************************************************/
+  /* save file_filter */
+  /******************************************************************/
+  file_filter_global = (char *)calloc(strlen((char *)file_filter)+1,
+                                      sizeof(char));
+
+#ifdef DEBUG
+  if (!file_filter_global)
+    printf("Calloc error for file_filter_global, in mapCB_icon_selection_dialog.\n");
+#endif
+
+  if (file_filter[0] == '*')
+    file_filter_global = strcpy(file_filter_global, (char *)&file_filter[1]);
+  else
+    file_filter_global = strcpy(file_filter_global, (char *)file_filter);
+
+  load_directories_list((char **)directories_list);
+  initial_filter = initialize_filter((char *)file_filter);
+  FreeIconSearchPathList((char **)directories_list);
+
+  /******************************************************************/
+  /* save main_filter */
+  /******************************************************************/
+  main_filter = (char *)calloc(strlen(initial_filter)+1, sizeof(char));
+
+#ifdef DEBUG
+  if (!main_filter)
+    printf("Calloc error for main_filter, in mapCB_icon_selection_dialog.\n");
+#endif
+
+  main_filter = strcpy(main_filter, initial_filter);
+
+  icons_in_container = NULL;
+  icon_count = 0;
+
+  update_container_contents (initial_filter);
+
+  /******************************************************************/
+  /* set selected_icon_name to first name in list                   */
+  /******************************************************************/
+#if 0
+  if (icons_in_container) {
+	  XtVaGetValues (icons_in_container[0], XmNimageName, &icon_file_name, NULL);
+	  XmTextFieldSetString (icon_name_text_field, icon_file_name);
+	  selected_icon_name = XtMalloc(strlen(icon_file_name) + 1);
+	  if (selected_icon_name)
+		  selected_icon_name = strcpy(selected_icon_name, icon_file_name);
+  }
+#endif
+
+  load_filter_text_field(initial_filter);
+
+  if (ErrorDialog && XtParent(ErrorDialog) == UxWidget) {
+    descendant = XtNameToWidget(ErrorDialog, "OK");
+    XtSetKeyboardFocus(ErrorDialog, descendant ? descendant : ErrorDialog);
+  }
+
+  TurnOffHourGlassAllWindows();
 }
 
 /***************************************************************************/
@@ -1391,6 +1473,11 @@ static Widget   _Uxbuild_icon_selection_dialog(void)
                 (XtCallbackProc) helpCB_general,
                 (XtPointer) HELP_ICONSELECTOR );
 
+        XtAddCallback(icon_selection_dialog, XmNmapCallback,
+                      mapCB_icon_selection_dialog, NULL);
+
+        XtAddCallback(icon_selection_dialog, XmNfocusCallback,
+                      focusCB_icon_selection_dialog, NULL);
 
         /* Creation of bottom_button_form */
         bottom_button_form = XtVaCreateManagedWidget( "bottom_button_form",
@@ -1857,7 +1944,6 @@ Widget  create_icon_selection_dialog(swidget    _UxUxParent,
 
 
 {
-        char                   *initial_filter;
         char                   *icon_file_name;
         Widget                  rtrn;
         int                     lcv;
@@ -1913,58 +1999,6 @@ Widget  create_icon_selection_dialog(swidget    _UxUxParent,
            XtUnmanageChild (icon_name_textfield_label);
            XtUnmanageChild (icon_name_text_field);
         }
-
-        TurnOnHourGlassAllWindows();
-
-        /******************************************************************/
-        /* save file_filter */
-        /******************************************************************/
-        file_filter_global = (char *)calloc(strlen((char *)file_filter)+1, sizeof(char));
-
-#ifdef DEBUG
-        if (!file_filter_global) printf("Calloc error for file_filter_global, in create_icon_selection_dialog.\n");
-#endif
-
-        if (file_filter[0] == '*')
-           file_filter_global = strcpy(file_filter_global, (char *)&file_filter[1]);
-        else
-           file_filter_global = strcpy(file_filter_global, (char *)file_filter);
-
-        load_directories_list ((char **)directories_list);
-        initial_filter = initialize_filter ((char *)file_filter);
-
-        /******************************************************************/
-        /* save main_filter */
-        /******************************************************************/
-        main_filter = (char *)calloc(strlen(initial_filter)+1, sizeof(char));
-
-#ifdef DEBUG
-        if (!main_filter) printf("Calloc error for main_filter, in create_icon_selection_dialog.\n");
-#endif
-
-        main_filter = strcpy(main_filter, initial_filter);;
-
-        icons_in_container = NULL;
-        icon_count = 0;
-
-        update_container_contents (initial_filter);
-
-        /******************************************************************/
-        /* set selected_icon_name to first name in list                   */
-        /******************************************************************/
-#if 0
-        if (icons_in_container) {
-           XtVaGetValues (icons_in_container[0], XmNimageName, &icon_file_name, NULL);
-           XmTextFieldSetString (icon_name_text_field, icon_file_name);
-           selected_icon_name = XtMalloc(strlen(icon_file_name) + 1);
-           if (selected_icon_name)
-              selected_icon_name = strcpy(selected_icon_name, icon_file_name);
-        }
-#endif
-
-        load_filter_text_field (initial_filter);
-
-        TurnOffHourGlassAllWindows();
 
         return(rtrn);
 }
