@@ -32,6 +32,8 @@
 
 #include	"name.h" 
 #include	"shell.h" 
+#undef access
+#include <X11/Xauth.h>
 #include <X11/Intrinsic.h>
 #include <X11/Shell.h>
 #include <X11/StringDefs.h>

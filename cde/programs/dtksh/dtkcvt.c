@@ -33,6 +33,8 @@
 /* X includes */
 
 #include "shell.h"
+#undef access
+#include <X11/Xauth.h>
 #include <signal.h>
 #include <fcntl.h>
 #include <X11/X.h>

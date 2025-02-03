@@ -30,6 +30,8 @@
 /*	actual or intended publication of such source code.     */
 
 #include "shell.h"
+#undef access
+#include <X11/Xauth.h>
 #include <signal.h>
 #include <stdlib.h>
 #include <fcntl.h>
