@@ -443,11 +443,6 @@ ManageWindow (WmScreenData *pSD, Window clientWindow, long manageFlags)
 	return;
     }
 
-    ApplyPrematureClientMessages (pCD);
-
-    if (!HasProperty (pCD, wmGD.xa__NET_WM_STATE))
-	UpdateNetWmState (pCD->client, NULL, 0, _NET_WM_STATE_REMOVE);
-
     /*
      * Send config notify if the client's been moved/resized
      */
@@ -744,6 +739,11 @@ ManageWindow (WmScreenData *pSD, Window clientWindow, long manageFlags)
 		      (long) wmGD.xa_DT_WM_WINDOW_ACK,
 		      CurrentTime, NULL, 0);
     }
+
+    ApplyPrematureClientMessages (pCD);
+
+    if (!HasProperty (pCD, wmGD.xa__NET_WM_STATE))
+	UpdateNetWmState (pCD->client, NULL, 0, _NET_WM_STATE_REMOVE);
 
     /*
      * Free the initial property list. This will force
