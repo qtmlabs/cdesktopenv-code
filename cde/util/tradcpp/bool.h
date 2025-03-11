@@ -30,7 +30,7 @@
 #ifndef BOOL_H
 #define BOOL_H
 
-#if __STDC__ > 199901
+#if __STDC_VERSION__ > 199901
 #include <stdbool.h>
 #else
 typedef int bool;
