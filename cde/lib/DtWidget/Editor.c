@@ -5776,7 +5776,7 @@ Center (FormatData *data,
 
 	if (! haveword)
 	{
-	  putc ('\n', data->pAdj->outfp);	/* "eat" any whitespace */
+	  putwc ('\n', data->pAdj->outfp);	/* "eat" any whitespace */
 	  data->centerstartpara = True;	/* expect new paragraph */
 	}
 
@@ -5823,7 +5823,7 @@ Center (FormatData *data,
 	    {
 		putwc(outline[i], data->pAdj->outfp);
 	    }
-	    putc('\n', data->pAdj->outfp);
+	    putwc('\n', data->pAdj->outfp);
 	  } 
 
 	} /* else */
@@ -5972,7 +5972,7 @@ Fill (FormatData *data,
 	{
 	  data->inlinenum--;			/* don't count empty lines */
 	  Dump (data, True);		/* force end paragraph */
-	  fputc ('\n', data->pAdj->outfp);	/* put this empty line */
+	  putwc ('\n', data->pAdj->outfp);	/* put this empty line */
 	  data->inlinenum = 0;		/* start new paragraph */
 	}
 	else				/* have text on line */
@@ -6246,11 +6246,11 @@ PrintIndent (FormatData *data,
       {
 	 while (indent >= data->tabsize)
          {
-	   putc ('\t', data->pAdj->outfp);
+	   putwc ('\t', data->pAdj->outfp);
 	   indent -= data->tabsize;
          }
       }
-   fprintf (data->pAdj->outfp, "%*s", indent, "");/*[remaining] blanks */
+   fwprintf (data->pAdj->outfp, L"%*s", indent, "");/*[remaining] blanks */
    }
 } /* PrintIndent */
 
@@ -6963,7 +6963,7 @@ DoAdjust(
         */
        (void)tmpnam(tempName1);
        (void)tmpnam(tempName2);
-       if ((adjRec.infp = fopen(tempName1, "w+")) != (FILE *)NULL) {
+       if ((adjRec.infp = fopen(tempName1, "w")) != (FILE *)NULL) {
 
          /* 
           * Successfully opened the first temporary file 
@@ -6979,8 +6979,7 @@ DoAdjust(
 
             fixLeftMarginAndNewlines( editor, adjRec.infp, leftMargin, 
 				      rightMargin, (int)start, (int)end );
-            fflush(adjRec.infp);
-            rewind(adjRec.infp);
+            freopen(NULL, "r", adjRec.infp);
 
             FormatText(&adjRec);
 
