@@ -422,8 +422,8 @@ AC_CHECK_LIB(Xinerama, XineramaQueryScreens,
 
 dnl Special check for tirpc...
 AC_CHECK_LIB(tirpc, svc_register,
-      [CFLAGS="${CFLAGS} -DOPT_TIRPC -I/usr/include/tirpc";
-       CXXFLAGS="${CXXFLAGS} -DOPT_TIRPC -I/usr/include/tirpc";
+      [EXTRA_INCS="${EXTRA_INCS} -I/usr/include/tirpc";
+       SOURCE_CPP_DEFINES="${SOURCE_CPP_DEFINES} -DOPT_TIRPC";
        TIRPCLIB=-ltirpc])
 AC_SUBST(TIRPCLIB)
 
