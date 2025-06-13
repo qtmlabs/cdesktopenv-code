@@ -80,6 +80,8 @@
 #include <sys/kbd.h>
 #endif
 
+#include <sys/file.h>
+
 #ifndef sigmask
 #define sigmask(m)  (1 << (( m-1)))
 #endif
@@ -805,6 +807,26 @@ StartDisplays( void )
     ForEachDisplay (CheckDisplayStatus);
 }
 
+int
+ReserveUtmpId( const char *utmpId ) {
+    int fd = -1;
+    char lockpath[64];
+
+    snprintf(lockpath, sizeof(lockpath), "/var/dt/.%s-utmp.lock", utmpId);
+
+    fd = open(lockpath, O_RDWR | O_CREAT | O_CLOEXEC, S_IRUSR | S_IWUSR);
+
+    if (fd < 0)
+        return fd;
+
+    if (flock(fd, LOCK_EX|LOCK_NB) == -1) {
+        close(fd);
+        return -1;
+    }
+
+    return fd;
+}
+
 int 
 StartDisplay(
         struct display *d )
@@ -889,12 +911,10 @@ StartDisplay(
 
 	/*
 	 *  initialize d->utmpId. Check to see if anyone else is using
-	 *  the requested ID. Always allow the first request for "dt" to
-	 *  succeed as utmp may have become corrupted.
+	 *  the requested ID.
 	 */
 
 	if (d->utmpId == NULL) {
-	    static int firsttime = 1;
 	    static char letters[] = "0123456789abcdefghijklmnopqrstuvwxyzz";
 	    char *t;	    
 
@@ -905,13 +925,10 @@ StartDisplay(
 	    t = letters;
 	    
 	    do {
-		if ( firsttime || UtmpIdOpen(d->utmpId)) {
-		    firsttime = 0;
+		d->utmpIdLock = ReserveUtmpId(d->utmpId);
+		if (d->utmpIdLock != -1)
 		    break;
-		}		
-		else {
-		    strncpy(&(d->utmpId[strlen(d->utmpId)]), t++, 1);
-    		}
+		strncpy(&(d->utmpId[strlen(d->utmpId)]), t++, 1);
 	    } while (*t != '\0');
 
 	    if (*t == '\0') {
@@ -1028,8 +1045,10 @@ StartDisplay(
  	    for ( p = d->name, q = d->name + i; p <= q; q-- ) {
  		(void) strncpy (d->utmpId, q, sizeof (u->ut_id));
  		d->utmpId[sizeof(u->ut_id)] = '\0';
- 		if (UtmpIdOpen(d->utmpId))
- 		    break;
+
+		d->utmpIdLock = ReserveUtmpId(d->utmpId);
+		if (d->utmpIdLock != -1)
+		    break;
  	    }
 
 #ifdef DEF_NETWORK_DEV

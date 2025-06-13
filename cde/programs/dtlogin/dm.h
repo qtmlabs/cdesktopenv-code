@@ -371,6 +371,7 @@ struct display {
 	char		*language;	/* value for LANG env variable */
 	char		*langList;	/* list of languages on login screen */
 	char		*utmpId;	/* id for entry in utmp file */
+	int		utmpIdLock;
 	char		*gettyLine;	/* line to run getty on */
 	char		*gettySpeed;	/* speed for getty (from gettydefs) */
 	char		*environStr;	/* environment variable resource */

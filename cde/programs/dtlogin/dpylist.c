@@ -194,6 +194,8 @@ RemoveDisplay( struct display *old )
 	    munmap (d->language, LANGUAGESIZE + 1);
 	    IfFree (d->langList);
 	    IfFree (d->utmpId);
+	    if (d->utmpIdLock >= 0)
+	    	close(d->utmpIdLock);
 	    IfFree (d->gettyLine);
 	    IfFree (d->gettySpeed);
 	    IfFree (d->environStr);
@@ -303,6 +305,7 @@ NewDisplay( char *name, char *class )
     d->language = language;
     d->langList = NULL;
     d->utmpId = NULL;
+    d->utmpIdLock = -1;
     d->gettyLine = NULL;
     d->gettySpeed = NULL;
     d->environStr = NULL;
