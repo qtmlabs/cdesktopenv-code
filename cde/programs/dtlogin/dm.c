@@ -533,7 +533,6 @@ WaitForChild( void )
 
 	    ChildReady = 0;
 	    (void) signal (SIGCHLD, ChildNotify);
-	    sleep(1);
 	}
     }
     else {
