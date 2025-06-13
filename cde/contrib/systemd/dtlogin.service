@@ -1,0 +1,18 @@
+[Unit]
+Description=CDE Login Manager
+
+After=systemd-user-sessions.service
+After=plymouth-quit-wait.service
+After=rc-local.service
+
+Requires=rpcbind.socket
+After=rpcbind.socket
+
+[Service]
+ExecStart=/usr/dt/bin/dtlogin
+ExecReload=kill -SIGHUP $MAINPID
+KillMode=mixed
+Restart=always
+
+[Install]
+Alias=display-manager.service
