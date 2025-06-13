@@ -106,7 +106,7 @@ XCOMM   *	Local local@console /usr/bin/X :0
 #elif defined (__NetBSD__)
    :0   Local local@console /usr/X11R7/bin/X :0
 #elif defined (__FreeBSD__)
-   :0   Local local@console /usr/local/bin/X :0
+   :0   Local local_uid@console root /usr/local/bin/X :0
 #else
    *	Local local@console /usr/bin/X11/X :0
 #endif
