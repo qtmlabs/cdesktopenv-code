@@ -538,6 +538,7 @@ LIBS="${EXTRA_LIBS} ${LIBS} ${PTHREAD_LIBS}"
 
 if test "$build_linux" = "yes"; then
    AM_LDFLAGS="${AM_LDFLAGS} -Wl,-z,defs"
+   PKG_CHECK_MODULES(LIBSYSTEMD, [libsystemd])
 fi
 
 if test "$build_aix" = "no"; then

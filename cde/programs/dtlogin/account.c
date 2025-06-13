@@ -264,6 +264,10 @@ Account( struct display *d, char *user, char *line, pid_t pid,
              snprintf(u->ut_line, sizeof(u->ut_line), "%s", line);
 
 #else
+#if defined(__linux__)
+             memset(u->ut_line, 0, sizeof(u->ut_line));
+             if (strcmp(line, "??") != 0 && strcmp(line, "NULL") != 0)
+#endif
              snprintf(u->ut_line, sizeof(u->ut_line), "%s", line);
 #endif
     }

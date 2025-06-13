@@ -6,6 +6,15 @@ auth required pam_unix.so
 account required pam_nologin.so
 account required pam_unix.so
 
+#ifdef __linux__
+session [success=5 default=ignore] pam_succeed_if.so user = LOGIN quiet
+session required pam_loginuid.so
+-session optional pam_namespace.so
+-session optional pam_keyinit.so force revoke
+session required pam_limits.so
+-session optional pam_systemd.so desktop=CDE
+#endif
+
 session required pam_lastlog.so
 
 password required pam_deny.so

@@ -56,8 +56,9 @@ dtgreet_SOURCES = vgcallback.c vglogo.c vgmain.c vgutil.c vglang.c
 dtchooser_SOURCES = chooser.c dtchooser.c vglogo.c vgutil.c vgcallback.c \
 		    vglang.c
 
+dtlogin_CFLAGS = $(AM_CFLAGS) $(LIBSYSTEMD_CFLAGS)
 dtlogin_LDADD = libresource.a $(DTCLIENTLIBS) $(XDMCPLIB) \
-	$(XTOOLLIB) $(TIRPCLIB) $(DTPAMSVCLIB) $(PAM_LIB)
+	$(XTOOLLIB) $(TIRPCLIB) $(DTPAMSVCLIB) $(PAM_LIB) $(LIBSYSTEMD_LIBS)
 
 dtgreet_LDADD = $(DTCLIENTLIBS) $(XTOOLLIB)
 

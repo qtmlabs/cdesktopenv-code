@@ -61,6 +61,12 @@
 # include	<pwd.h>
 # include	<stdarg.h>
 
+#if defined(__linux__)
+#include <systemd/sd-bus.h>
+#include <systemd/sd-daemon.h>
+#include <systemd/sd-login.h>
+#endif
+
 #if defined(SYSV) || defined(SVR4) || defined(__linux__)
 #ifndef F_TLOCK
 # include	<unistd.h>
@@ -1635,11 +1641,18 @@ GettyMessage( struct display *d, int msgnum )
 int 
 GettyRunning( struct display *d )
 {
+#if defined(__linux__)
+    char **sessions;
+    int num_sessions;
+#else
     struct utmpx utmp;		/* local struct for new entry		   */
     struct utmpx *u;		/* pointer to entry in utmp file	   */
     
     int		rvalue;		/* return value (TRUE or FALSE)		   */
     char	buf[32];
+
+    bzero(&utmp, sizeof(struct utmpx));
+#endif
         
     d->gettyState = DM_GETTY_NONE;
 
@@ -1653,9 +1666,6 @@ GettyRunning( struct display *d )
 	;
     else
         return FALSE;
-
-
-    bzero(&utmp, sizeof(struct utmpx));
 
 #ifdef _AIX
    if (!strcmp(d->gettyLine,"console")) {
@@ -1674,12 +1684,103 @@ GettyRunning( struct display *d )
         utmp.ut_line[sizeof(utmp.ut_line) - 1] = 0;
      }
 
-#else
+#elif !defined(__linux__)
     strncpy(utmp.ut_line, d->gettyLine, sizeof(utmp.ut_line) - 1);
     utmp.ut_line[sizeof(utmp.ut_line) - 1] = 0;
 #endif
     
-    Debug("Checking for a getty on line %s.\n", utmp.ut_line);
+    Debug("Checking for a getty on line %s.\n", d->gettyLine);
+
+#if defined(__linux__)
+    if (!sd_booted())
+        return FALSE;
+
+    num_sessions = sd_get_sessions(&sessions);
+    if (num_sessions < 0)
+        return FALSE;
+
+    for (int i = 0; i < num_sessions && d->gettyState == DM_GETTY_NONE; ++i) {
+        char *session = sessions[i];
+        char *session_tty = NULL;
+        char *session_service = NULL;
+
+        if (sd_session_get_tty(session, &session_tty) < 0)
+            goto fail;
+        if (strcmp(d->gettyLine, session_tty) != 0)
+            goto fail;
+        if (sd_session_get_service(session, &session_service) < 0)
+            goto fail;
+        if (strcmp(session_service, "dtlogin") == 0)
+            goto fail;
+
+        /* Got'em */
+        d->gettyState = DM_GETTY_USER;
+
+fail:
+        if (session_tty)
+            free(session_tty);
+        if (session_service)
+            free(session_service);
+        free(session);
+    }
+    free(sessions);
+
+    if (d->gettyState == DM_GETTY_NONE) {
+        int r;
+        sd_bus *bus = NULL;
+        sd_bus_message *get_unit_reply = NULL;
+        char unit_name[64];
+        char *getty_unit_obj = NULL;
+        char *active_state = NULL;
+
+        snprintf(unit_name, sizeof(unit_name), "getty@%s.service", d->gettyLine);
+
+        if (sd_bus_default_system(&bus) < 0)
+            goto fail2;
+
+        r = sd_bus_call_method(bus,
+                               "org.freedesktop.systemd1",
+                               "/org/freedesktop/systemd1",
+                               "org.freedesktop.systemd1.Manager",
+                               "GetUnit",
+                               NULL,
+                               &get_unit_reply,
+                               "s",
+                               unit_name);
+        if (r < 0)
+            goto fail2;
+
+        r = sd_bus_message_read(get_unit_reply, "o", &getty_unit_obj);
+        if (r < 0)
+            goto fail2;
+
+        r = sd_bus_get_property_string(bus,
+                                       "org.freedesktop.systemd1",
+                                       getty_unit_obj,
+                                       "org.freedesktop.systemd1.Unit",
+                                       "ActiveState",
+                                       NULL,
+                                       &active_state);
+        if (r < 0)
+            goto fail2;
+
+        if (strcmp(active_state, "active") != 0)
+            goto fail2;
+
+        d->gettyState = DM_GETTY_LOGIN;
+
+fail2:
+        sd_bus_unrefp(&bus);
+        sd_bus_message_unrefp(&get_unit_reply);
+        if (active_state)
+            free(active_state);
+    }
+
+    if (d->gettyState == DM_GETTY_USER && wakeupTime > 0)
+        d->gettyState = DM_GETTY_NONE;
+
+    return d->gettyState != DM_GETTY_NONE;
+#else
     
     setutxent();
 
@@ -1719,6 +1820,7 @@ GettyRunning( struct display *d )
 
     endutxent();
     return rvalue;
+#endif
 }
 
 

@@ -13,6 +13,9 @@ CPP_TARGETS = 0060.dtsysenv Dtlogin Xaccess Xconfig Xconfig.con	\
 	display.home.session dtlslocale dtprofile home.session	\
 	sys.dtprofile
 
+if LINUX
+CPP_TARGETS += 0070.systemd
+endif
 
 
 if HAS_PAM_LIBRARY
@@ -67,6 +70,9 @@ dist_configs_SCRIPTS = sys.dtprofile Xfailsafe Xreset Xsetup Xstartup
 
 xsessdir=$(CDE_INSTALLATION_TOP)/config/Xsession.d
 dist_xsess_SCRIPTS = 0060.dtsysenv
+if LINUX
+dist_xsess_SCRIPTS += 0070.systemd
+endif
 
 dist_bin_SCRIPTS = Xsession
 
@@ -79,6 +85,12 @@ sys.dtprofile: dtprofile
 0060.dtsysenv: 0060.dtsysenv.src
 	$(RM) $@
 	$(GENCPP) -P -DXCOMM=# $(AM_CPPFLAGS)  $< > $@
+
+if LINUX
+0070.systemd: 0070.systemd.src
+	$(RM) $@
+	$(GENCPP) -P -DXCOMM=# $(AM_CPPFLAGS)  $< > $@
+endif
 
 Dtlogin: Dtlogin.src
 	$(RM) $@

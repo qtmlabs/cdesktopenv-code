@@ -1,0 +1,50 @@
+XCOMM!KORNSHELL
+XCOMM ####################################################################
+XCOMM ##  File:              0070.systemd
+XCOMM ##
+XCOMM ##  Default Location:  /usr/dt/config/Xsession.d/
+XCOMM ##
+XCOMM ##  Purpose:           Configure systemd-specific login session variables
+XCOMM ##
+XCOMM ##  Description:
+XCOMM ##                     This script is invoked by means of the Xsession
+XCOMM ##                     file at user login.
+XCOMM ##
+XCOMM ##  Invoked by:        /usr/dt/bin/Xsession
+XCOMM ##
+XCOMM ##  $TOG: N/A $
+XCOMM ##
+XCOMM ##  (c) Copyright 2025 QTM Labs, Inc.
+XCOMM ##
+XCOMM ####################################################################
+
+XCOMM ##
+XCOMM ####################################################################
+
+if command -v loginctl >/dev/null 2>&1 && loginctl show-session self >/dev/null 2>&1; then
+        export XDG_SESSION_ID="$(loginctl show-session --value -p Id self)"
+        export XDG_SESSION_TYPE="$(loginctl show-session --value -p Type self)"
+        export XDG_SESSION_CLASS="$(loginctl show-session --value -p Class self)"
+        export XDG_SEAT="$(loginctl show-session --value -p Seat self)"
+        export XDG_VTNR="$(loginctl show-session --value -p VTNr self)"
+        export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+        export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"
+
+        if [ -z "$XDG_SEAT" ]; then
+                unset XDG_SEAT
+        fi
+
+        if [ -z "$XDG_VTNR" ] || [ "$XDG_VTNR" = 0 ]; then
+                unset XDG_VTNR
+        fi
+
+	systemctl --user unset-environment DISPLAY XAUTHORITY
+	systemctl --user import-environment DISPLAY XAUTHORITY
+fi
+
+export XDG_SESSION_DESKTOP=CDE
+export XDG_CURRENT_DESKTOP=CDE
+
+systemctl --user import-environment XDG_SESSION_DESKTOP XDG_CURRENT_DESKTOP
+
+XCOMM #########################         eof       #####################

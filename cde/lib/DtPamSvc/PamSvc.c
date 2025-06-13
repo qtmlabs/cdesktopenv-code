@@ -52,6 +52,7 @@
 #include <utmpx.h>
 #include <unistd.h>
 #if defined(__linux__)
+#include <fcntl.h>
 #include <grp.h>
 #endif
 #include <Dt/PamSvc.h>
@@ -97,8 +98,24 @@ static int PamInit(char* prog_name,
     }
 
     if (status == PAM_SUCCESS) {
-        if (line_dev) pam_set_item(pamh, PAM_TTY, line_dev);
+#if defined(__linux__)
+        if (line_dev &&
+            strncmp(line_dev, "/dev/", strlen("/dev/")) == 0 &&
+            strcmp(line_dev, "/dev/NULL") != 0 &&
+            strcmp(line_dev, "/dev/??") != 0)
+#else
+        if (line_dev)
+#endif
+            pam_set_item(pamh, PAM_TTY, line_dev);
+#if defined(__linux__)
+        if (display_name) pam_set_item(pamh, PAM_XDISPLAY, display_name);
+        if (display_name &&
+            display_name[0] != '\0' &&
+            display_name[0] != ':')
+            pam_set_item(pamh, PAM_RHOST, display_name);
+#else
         if (display_name) pam_set_item(pamh, PAM_RHOST, display_name);
+#endif
     }
 
     return(status);
@@ -158,6 +175,10 @@ int _DtAccounting( char*   prog_name,
         int     exitcode )
 {
     int session_type, status;
+#if defined(__linux__)
+    const char *sid;
+    char spath[47];
+#endif
     char *line_str = line ? line : "NULL";
     char *line_dev = create_devname(line_str);
 
@@ -176,6 +197,14 @@ int _DtAccounting( char*   prog_name,
         case LOGIN_PROCESS:
         default:
             status = pam_open_session(pamh, 0);
+
+#if defined(__linux__)
+            if (sid = pam_getenv(pamh, "XDG_SESSION_ID")) {
+                /* ultra cursed hack: reopen session FIFO to prevent auto logout */
+                snprintf(spath, sizeof(spath), "/run/systemd/sessions/%s.ref", sid);
+                open(spath, O_WRONLY);
+            }
+#endif
             break;
     }
 
