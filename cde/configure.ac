@@ -487,6 +487,8 @@ AC_CHECK_LIB(SM, SmcOpenConnection, [XTOOLLIB="-lSM ${XTOOLLIB}"], ,
                  [${EXTRA_INCS} ${EXTRA_LIBS}])
 AC_CHECK_LIB(Xm, XmTextSetString, [XTOOLLIB="-lXm ${XTOOLLIB}"], ,
                  [${EXTRA_INCS} ${EXTRA_LIBS}])
+AC_CHECK_LIB(Mrm, MrmRegisterClass, [XTOOLLIB="-lMrm ${XTOOLLIB}"], ,
+                 [${EXTRA_INCS} ${EXTRA_LIBS}])
 XTOOLLIB="${EXTRA_INCS} ${EXTRA_LIBS} ${X_EXTRA_LIBS} ${XTOOLLIB}"
 AC_SUBST([XTOOLLIB])
 

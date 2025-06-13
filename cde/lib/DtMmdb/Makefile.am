@@ -22,7 +22,7 @@ SUBDIRS = HardCopy \
 
 lib_LTLIBRARIES = libDtMmdb.la
 
-libDtMmdb_la_SOURCES =
+libDtMmdb_la_SOURCES = dummy.cxx
 
 libDtMmdb_la_LIBADD = HardCopy/libHardCopy.la \
 		      StyleSheet/libStyleSheet.la \
@@ -42,6 +42,7 @@ libDtMmdb_la_LIBADD = HardCopy/libHardCopy.la \
 		      oliasdb/liboliasdb.la \
 		      schema/libschema.la \
 		      storage/libstorage.la \
-		      utility/libutility.la
+		      utility/libutility.la \
+		      $(LMDBLIB)
 
 libDtMmdb_la_LDFLAGS = $(AM_LDFLAGS) -version-info 2:1:0

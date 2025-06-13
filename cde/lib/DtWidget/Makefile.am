@@ -8,6 +8,8 @@ AM_CPPFLAGS += -DCDE_INSTALLATION_TOP=$(CDE_INSTALLATION_TOP) $(DT_INCDIR)
 
 libDtWidget_la_CFLAGS = $(AM_CFLAGS) -DI18N_MSG -DMULTIBYTE
 
+libDtWidget_la_LIBADD = ../DtSvc/libDtSvc.la $(XTOOLLIB)
+
 # in order to try to keep lib versions the same across platforms, (2.1.0)
 if BSD
 libDtWidget_la_LDFLAGS = $(AM_LDFLAGS) -version-info 2:1:0
@@ -17,7 +19,7 @@ endif
 
 if SOLARIS
 libDtWidget_la_CFLAGS += -DNO_REGCOMP
-libDtWidget_la_LIBADD = -lw -lintl
+libDtWidget_la_LIBADD += -lw -lintl
 endif
 
 
