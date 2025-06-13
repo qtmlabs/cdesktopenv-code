@@ -196,7 +196,7 @@ Account( struct display *d, char *user, char *line, pid_t pid,
     bzero(&utmp, sizeof(struct utmp));
 #endif
 
-    strncpy(utmp.ut_id, d->utmpId, sizeof(u->ut_id) - 1);
+    strncpy(utmp.ut_id, d->utmpId, sizeof(u->ut_id));
     utmp.ut_type = LOGIN_PROCESS;
 
 #ifdef HAS_PAM_LIBRARY
