@@ -99,7 +99,7 @@ $ The set of allowable locale strings can be found in
 $ /usr/dt/config/svc/CDE.lcx 
 $  
 
-1 "fr_FR.ISO-8859-1"
+1 "fr_FR.UTF-8"
 $  
 $ Specifies the title for the browser. 
 $ It is used in the body of text displayed to the user. 

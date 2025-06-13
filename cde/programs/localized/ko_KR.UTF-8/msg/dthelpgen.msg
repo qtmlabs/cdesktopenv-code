@@ -75,7 +75,7 @@ $ HP Roman8 character set it would be '<lang+terr>.HP-ROMAN8', etc.
 $ The set of allowable locale strings can be found in
 $ /usr/dt/config/svc/CDE.lcx
 $ 
-1 ko_KR.dt-eucKR
+1 ko_KR.UTF-8
 
 $ 
 $ Specifies the title for the browser.
