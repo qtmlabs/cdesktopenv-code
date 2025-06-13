@@ -54,11 +54,7 @@
 # include	<sys/types.h>
 # include	<sys/signal.h>
 # include	<sys/stat.h>
-#if defined(__FreeBSD__)
 # include	<utmpx.h>
-#else
-# include	<utmp.h>
-#endif
 # include	<signal.h>
 # include	<time.h>
 # include	<utime.h>
@@ -1013,7 +1009,7 @@ StartDisplay(
  	if (d->utmpId == NULL) {
  	    int i;
  	    char *p, *q;
- 	    struct utmp *u;
+ 	    struct utmpx *u;
  	    
  	    d->utmpId = malloc(sizeof(u->ut_id) +1);
  
@@ -1639,13 +1635,8 @@ GettyMessage( struct display *d, int msgnum )
 int 
 GettyRunning( struct display *d )
 {
-#if defined(__FreeBSD__)
     struct utmpx utmp;		/* local struct for new entry		   */
     struct utmpx *u;		/* pointer to entry in utmp file	   */
-#else
-    struct utmp utmp;		/* local struct for new entry	   	   */
-    struct utmp *u;		/* pointer to entry in utmp file	   */
-#endif
     
     int		rvalue;		/* return value (TRUE or FALSE)		   */
     char	buf[32];
@@ -1664,11 +1655,7 @@ GettyRunning( struct display *d )
         return FALSE;
 
 
-#if defined(__FreeBSD__)
     bzero(&utmp, sizeof(struct utmpx));
-#else
-    bzero(&utmp, sizeof(struct utmp));
-#endif
 
 #ifdef _AIX
    if (!strcmp(d->gettyLine,"console")) {
@@ -1694,12 +1681,11 @@ GettyRunning( struct display *d )
     
     Debug("Checking for a getty on line %s.\n", utmp.ut_line);
     
-#if !defined(CSRG_BASED)
-    setutent();
+    setutxent();
 
     rvalue = FALSE;
     
-    while ( (u = getutent()) != NULL ) {
+    while ( (u = getutxent()) != NULL ) {
     
         if ((strncmp(u->ut_line, utmp.ut_line, sizeof(u->ut_line)) != 0) ||
             (strncmp(u->ut_id,   d->utmpId,    sizeof(u->ut_id))   == 0) )
@@ -1731,8 +1717,7 @@ GettyRunning( struct display *d )
 	}
     }
 
-    endutent();
-#endif /* !CSRG_BASED */
+    endutxent();
     return rvalue;
 }
 
