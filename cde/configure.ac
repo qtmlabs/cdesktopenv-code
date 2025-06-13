@@ -540,6 +540,10 @@ if test "$build_linux" = "yes"; then
    AM_LDFLAGS="${AM_LDFLAGS} -Wl,-z,defs"
 fi
 
+if test "$build_aix" = "no"; then
+   AM_LDFLAGS="${AM_LDFLAGS} -Wl,--as-needed"
+fi
+
 AC_SUBST(AM_CPPFLAGS)
 AC_SUBST(AM_CFLAGS)
 AC_SUBST(AM_CXXFLAGS)
