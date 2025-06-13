@@ -217,7 +217,7 @@ XCOMM ##########################################################################
 
   [ -z "$EDITOR" ] && EDITOR=CDE_INSTALLATION_TOP/bin/dtpad
   [ -z "$MAIL" ] && MAIL=cpp_MAIL
-  [ -z "$LANG" ] && LANG="C"
+  [ -z "$LANG" ] && LANG="en_US.UTF-8"
   TERM=dtterm
   SESSION_SVR=`hostname`
 
