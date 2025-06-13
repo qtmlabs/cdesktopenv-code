@@ -6,12 +6,7 @@ libDtPrint_la_CFLAGS = $(AM_CFLAGS) -DMULTIBYTE -DI18N_MSG @DT_INCDIR@
 
 libDtPrint_la_LIBADD = ../DtSvc/libDtSvc.la $(XTOOLLIB)
 
-# in order to try to keep lib versions the same across platforms, (2.1.0)
-if BSD
-libDtPrint_la_LDFLAGS = $(AM_LDFLAGS) -version-info 2:1:0
-else
-libDtPrint_la_LDFLAGS = $(AM_LDFLAGS) -version-info 3:0:1
-endif
+libDtPrint_la_LDFLAGS = $(AM_LDFLAGS) -version-number 2:1:0
 
 
 if SOLARIS

@@ -45,4 +45,4 @@ libDtMmdb_la_LIBADD = HardCopy/libHardCopy.la \
 		      utility/libutility.la \
 		      $(LMDBLIB)
 
-libDtMmdb_la_LDFLAGS = $(AM_LDFLAGS) -version-info 2:1:0
+libDtMmdb_la_LDFLAGS = $(AM_LDFLAGS) -version-number 2:1:0

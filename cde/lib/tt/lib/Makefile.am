@@ -20,10 +20,5 @@ if LINUX
 libtt_la_LIBADD += $(TIRPCLIB)
 endif
 
-# in order to try to keep lib versions the same across platforms, (2.1.0)
-if BSD
-libtt_la_LDFLAGS = $(AM_LDFLAGS) -version-info 2:1:0
-else
-libtt_la_LDFLAGS = $(AM_LDFLAGS) -version-info 3:0:1
-endif
+libtt_la_LDFLAGS = $(AM_LDFLAGS) -version-number 2:1:0
 

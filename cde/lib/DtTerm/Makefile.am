@@ -25,10 +25,5 @@ if HAS_UTEMPTER_LIBRARY
 libDtTerm_la_LIBADD += -lutempter
 endif
 
-# in order to try to keep lib versions the same across platforms, (2.1.0)
-if BSD
-libDtTerm_la_LDFLAGS = $(AM_LDFLAGS) -version-info 2:1:0
-else
-libDtTerm_la_LDFLAGS = $(AM_LDFLAGS) -version-info 3:0:1
-endif
+libDtTerm_la_LDFLAGS = $(AM_LDFLAGS) -version-number 2:1:0
 
