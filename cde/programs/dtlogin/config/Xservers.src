@@ -100,7 +100,7 @@ XCOMM ##########################################################################
 #elif defined (_NO_CONSOLE)
 XCOMM   *	Local local@console /usr/bin/X :0
 #elif defined (__linux__)
-   :0	Local local_uid@tty1 root /usr/bin/X :0 
+   :0	Local local_uid@tty1 root /usr/bin/X :0 vt1
 #elif defined (__OpenBSD__)
    :0   Local local_uid@console root /usr/X11R6/bin/X :0
 #elif defined (__NetBSD__)
