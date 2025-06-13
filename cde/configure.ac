@@ -528,16 +528,14 @@ if test -n "$MISSING_PROGS"; then
    AC_MSG_ERROR([Please install the following REQUIRED programs: ${MISSING_PROGS}])
 fi
 
-dnl set CPPFLAGS, CFLAGS, and CXXFLAGS.
-dnl The Autoconf manual says that these are user variables and
-dnl shouldn't be modified.  It suggests that you create a special
-dnl variable and presumably add those to your Makefile.am files.  We
-dnl have 192 of these currently, so... The user will just have to
-dnl deal, or modify them here directly.
-CPPFLAGS="${CPPFLAGS} ${SOURCE_CPP_DEFINES} ${CPP_COMPILER_FLAGS}"
-CFLAGS="${CFLAGS} ${C_COMPILER_FLAGS} ${EXTRA_INCS} ${PTHREAD_CFLAGS}"
-CXXFLAGS="${CXXFLAGS} ${CXX_COMPILER_FLAGS} ${EXTRA_INCS} ${PTHREAD_CFLAGS}"
+AM_CPPFLAGS="${SOURCE_CPP_DEFINES} ${CPP_COMPILER_FLAGS}"
+AM_CFLAGS="${C_COMPILER_FLAGS} ${EXTRA_INCS} ${PTHREAD_CFLAGS}"
+AM_CXXFLAGS="${CXX_COMPILER_FLAGS} ${EXTRA_INCS} ${PTHREAD_CFLAGS}"
 LIBS="${EXTRA_LIBS} ${LIBS} ${PTHREAD_LIBS}"
+
+AC_SUBST(AM_CPPFLAGS)
+AC_SUBST(AM_CFLAGS)
+AC_SUBST(AM_CXXFLAGS)
 
 dnl All of the makefiles we need to generate go here...
 AC_CONFIG_FILES([

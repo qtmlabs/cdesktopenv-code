@@ -2,7 +2,7 @@ MAINTAINERCLEANFILES = Makefile.in
 
 bin_PROGRAMS = dtmail
 
-dtmail_CXXFLAGS = -I../include -I../include/MotifApp -I../include/utils \
+dtmail_CXXFLAGS = $(AM_CXXFLAGS) -I../include -I../include/MotifApp -I../include/utils \
 		  -I../include/DtMail -I../libDtMail/RFC -I$(x_includes) \
 		  -I$(srcdir)/lib -I../../dthelp -DRELEASE_NOTES \
 		  -DDTMAIL_TOOLTALK -DDTEDITOR

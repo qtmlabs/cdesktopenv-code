@@ -2,7 +2,7 @@ MAINTAINERCLEANFILES = Makefile.in
 
 bin_PROGRAMS = dtappgather
 
-dtappgather_CXXFLAGS = -I../libCliSrv $(DT_INCDIR)
+dtappgather_CXXFLAGS = $(AM_CXXFLAGS) -I../libCliSrv $(DT_INCDIR)
 
 dtappgather_LDADD = ../libCliSrv/libCliSrv.a $(DTCLIENTLIBS) $(XTOOLLIB)
 

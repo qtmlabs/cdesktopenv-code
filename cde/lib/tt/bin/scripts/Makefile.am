@@ -7,7 +7,7 @@ noinst_SCRIPTS = ttce2xdr
 BUILT_SOURCES = ttce2xdr
 CLEANFILES = ttce2xdr
 
-AM_CPPFLAGS = $(TT_VERSION_DEFINE)
+AM_CPPFLAGS += $(TT_VERSION_DEFINE)
 
 
 ttce2xdr: ttce2xdr.cpp

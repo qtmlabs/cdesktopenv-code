@@ -8,7 +8,7 @@ noinst_LIBRARIES = libAButil.a
 
 #noinst_PROGRAMS = util_test istr_test
 
-libAButil_a_CFLAGS = $(EXTRA_DEFINES) -I$(ABINCLUDES)
+libAButil_a_CFLAGS = $(AM_CFLAGS) $(EXTRA_DEFINES) -I$(ABINCLUDES)
 
 libAButil_a_SOURCES = abio.c          \
 		      abio_path.c     \
@@ -23,12 +23,12 @@ libAButil_a_SOURCES = abio.c          \
 
 #util_test_LDADD = libAButil.a
 
-#util_test_CFLAGS = $(EXTRA_DEFINES) -I$(ABINCLUDES)
+#util_test_CFLAGS = $(AM_CFLAGS) $(EXTRA_DEFINES) -I$(ABINCLUDES)
 
 #util_test_SOURCES = util_test.c
 
 #istr_test_LDADD = libAButil.a
 
-#istr_test_CFLAGS = $(EXTRA_DEFINES) -I$(ABINCLUDES)
+#istr_test_CFLAGS = $(AM_CFLAGS) $(EXTRA_DEFINES) -I$(ABINCLUDES)
 
 #istr_test_SOURCES = istr_test.c

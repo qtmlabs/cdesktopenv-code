@@ -20,7 +20,7 @@ noinst_PROGRAMS = restore
 AM_LFLAGS = -Cf -L -8 -s
 AM_YFLAGS = -d
 
-AM_CXXFLAGS = \
+AM_CXXFLAGS += \
 	      -DCDE_NEXT \
 	      -DDTDCBK_DATAROOTDIR=\"$(dtdocbookdatadir)\" \
 	      -DDTSEARCH \

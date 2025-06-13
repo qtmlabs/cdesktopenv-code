@@ -2,7 +2,7 @@ MAINTAINERCLEANFILES = Makefile.in
 
 lib_LTLIBRARIES = libDtPrint.la
 
-libDtPrint_la_CFLAGS = -DMULTIBYTE -DI18N_MSG @DT_INCDIR@
+libDtPrint_la_CFLAGS = $(AM_CFLAGS) -DMULTIBYTE -DI18N_MSG @DT_INCDIR@
 
 # in order to try to keep lib versions the same across platforms, (2.1.0)
 if BSD

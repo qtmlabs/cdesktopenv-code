@@ -6,7 +6,7 @@ bin_PROGRAMS = dtimsstart
 
 dist_xsession_SCRIPTS = 0020.dtims
 
-dtimsstart_CFLAGS = -DNLS 
+dtimsstart_CFLAGS = $(AM_CFLAGS) -DNLS
 
 dtimsstart_LDADD = $(DTCLIENTLIBS) $(XTOOLLIB)
 

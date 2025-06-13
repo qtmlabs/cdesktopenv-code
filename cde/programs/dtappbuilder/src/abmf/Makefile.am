@@ -20,7 +20,7 @@ bin_PROGRAMS = dtcodegen
 
 noinst_DATA = dtcodegen.cat
 
-dtcodegen_CFLAGS = $(EXTRA_DEFINES) -I$(ABINCLUDES) -I../libABil
+dtcodegen_CFLAGS = $(AM_CFLAGS) $(EXTRA_DEFINES) -I$(ABINCLUDES) -I../libABil
 
 dtcodegen_LDADD = ../libABil/libABil.a  \
 		  ../libABobjXm/libABobjXm.a  \
@@ -48,13 +48,13 @@ dtcodegen_SOURCES = abmf.c                  args.c \
 
 #ab_func_strings_SOURCES = ab_func_strings.c
 
-#test_parse_CFLAGS = -DMAIN -D_POSIX_SOURCE=1 -I$(ABINCLUDES)
+#test_parse_CFLAGS = $(AM_CFLAGS) -DMAIN -D_POSIX_SOURCE=1 -I$(ABINCLUDES)
 
 #test_parse_LDADD = ../libAButil/libAButil.a
 
 #test_parse_SOURCES = parse_c.c
 
-#test_merge_CFLAGS = -DMAIN -D_POSIX_SOURCE=1 -I$(ABINCLUDES)
+#test_merge_CFLAGS = $(AM_CFLAGS) -DMAIN -D_POSIX_SOURCE=1 -I$(ABINCLUDES)
 
 #test_merge_LDADD = ../libAButil/libAButil.a parse_c.o
 
