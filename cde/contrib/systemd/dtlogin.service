@@ -14,5 +14,7 @@ ExecReload=kill -SIGHUP $MAINPID
 KillMode=mixed
 Restart=always
 
+TimeoutStopSec=5s
+
 [Install]
 Alias=display-manager.service

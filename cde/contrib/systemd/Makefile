@@ -1,4 +1,7 @@
-FILES = dtlogin.service
+FILES = \
+	dtlogin.service \
+	session-.scope.d/49-cde-timeout.conf \
+	user@.service.d/49-cde-timeout.conf
 
 help:
 	@echo This directory contains systemd service definitions and configuration files for CDE.
