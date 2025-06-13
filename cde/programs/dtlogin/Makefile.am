@@ -2,6 +2,14 @@ SUBDIRS = config
 
 bin_PROGRAMS = dtlogin dtgreet dtchooser
 
+if HAS_PAM_LIBRARY
+PAM_LIB = -lpam
+DTPAMSVCLIB = $(LIBPAMSVC)
+else
+PAM_LIB =
+DTPAMSVCLIB =
+endif
+
 XDMDIR = $(CDE_LOGFILES_TOP)
 
 DEF_SERVER = $(XBINDIR)/X
@@ -18,11 +26,11 @@ AM_CFLAGS = -DCDE_CONFIGURATION_TOP=\"$(CDE_CONFIGURATION_TOP)\" \
 	    -DXDMDIR=\"$(XDMDIR)\" \
 	    -DKORNSHELL=$(KSH) -DUNIXCONN -DTCPCONN -DXDMCP
 
-dtlogin_SOURCES = access.c auth.c genauth.c daemon.c dm.c \
+dtlogin_SOURCES = access.c account.c auth.c genauth.c daemon.c dm.c \
                   dpylist.c error.c file.c mitauth.c protodpy.c policy.c \
                   reset.c server.c session.c socket.c util.c \
                   verify.c sysauth.c fontpath.c qualify.c choose.c netaddr.c \
-		  xdmcp.c
+		  xdmcp.c $(PAM_SRCS)
 
 # We play a game here with resources.o (dtlogin).  It needs special options.
 noinst_LIBRARIES = libresource.a
@@ -49,7 +57,7 @@ dtchooser_SOURCES = chooser.c dtchooser.c vglogo.c vgutil.c vgcallback.c \
 		    vglang.c
 
 dtlogin_LDADD = libresource.a $(DTCLIENTLIBS) $(XDMCPLIB) \
-	$(XTOOLLIB) $(TIRPCLIB)
+	$(XTOOLLIB) $(TIRPCLIB) $(DTPAMSVCLIB) $(PAM_LIB)
 
 dtgreet_LDADD = $(DTCLIENTLIBS) $(XTOOLLIB)
 

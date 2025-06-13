@@ -172,8 +172,3 @@ libDtSvc_la_SOURCES = 	DtCodelibs/buf.C \
 	DtUtil2/Utility.c \
 	DtUtil2/XlationSvc.c \
 	DtUtil2/XmWrap.c
-
-if HAS_PAM_LIBRARY
-libDtSvc_la_SOURCES += DtUtil2/SvcPam.c
-libDtSvc_la_LIBADD = $(PAMLIB)
-endif

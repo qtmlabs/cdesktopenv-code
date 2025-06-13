@@ -54,6 +54,11 @@
 # include	<sys/types.h>
 # include	<sys/signal.h>
 # include	<sys/stat.h>
+#if defined(__FreeBSD__)
+# include	<utmpx.h>
+#else
+# include	<utmp.h>
+#endif
 # include	<signal.h>
 # include	<time.h>
 # include	<utime.h>
@@ -118,7 +123,7 @@ struct passwd   puser;		/* pseudo-user password entry		   */
 int		Rescan;
 static long	ServersModTime, ConfigModTime, AccessFileModTime;
 int		wakeupTime = -1;
-char		*progPath, *progName;
+char		*progName;
 
 char		DisplayName[32]="main";
 
@@ -142,7 +147,6 @@ void RunChooser(struct display  *d); // RunChooser.c
 int 
 main( int argc, char **argv )
 {
-    char	*str;
     long	oldpid;
     mode_t	oldumask;
     struct passwd   *p;		/* pointer to  passwd structure (pwd.h)	   */
@@ -162,29 +166,11 @@ main( int argc, char **argv )
     /*
      * save program name and path...
      */
+     
+    if ( (progName = malloc(strlen(argv[0]) + 1)) != NULL )
+	strcpy(progName, argv[0]);
 
-    progPath = strdup(argv[0]);
-
-    if (str = strrchr(progPath, '/'))
-    {
-	if (strlen(str) < 2)
-	{
-	    fprintf(stderr, (char *)
-		ReadCatalog(MC_ERROR_SET, MC_NO_MEMORY, MC_DEF_NO_MEMORY),
-		argv[0]);
-	    exit (1);
-	}
-
-	progName = strdup(++str);
-	*str = '\0';
-    }
-    else
-    {
-	progName = progPath;
-	progPath = strdup("./");
-    }
-
-
+     
     /*
      * Step 1 - load configuration parameters
      */
@@ -593,6 +579,14 @@ ProcessChildDeath( int pid, waitType status )
 	if ( (d = FindDisplayByPid (pid)) != 0 ) {
 	    d->pid = -1;
 
+	    /*
+	     *  do process accounting...
+	     */
+
+#if !defined(CSRG_BASED)
+	    Account(d, NULL, NULL, pid, DEAD_PROCESS, status);
+#endif
+
 
 	    /*
 	     *  make sure authorization file is deleted...
@@ -719,6 +713,14 @@ ProcessChildDeath( int pid, waitType status )
 	else if ( (d = FindDisplayByServerPid (pid)) != 0 )
 	{
 	    d->serverPid = -1;
+
+	    /*
+	     *  do process accounting...
+	     */
+
+#if !defined(CSRG_BASED)
+	    Account(d, NULL, NULL, pid, DEAD_PROCESS, status);
+#endif
 
 	    switch (d->status)
 	    {
@@ -893,6 +895,43 @@ StartDisplay(
     	}
 
 	/*
+	 *  initialize d->utmpId. Check to see if anyone else is using
+	 *  the requested ID. Always allow the first request for "dt" to
+	 *  succeed as utmp may have become corrupted.
+	 */
+
+	if (d->utmpId == NULL) {
+	    static int firsttime = 1;
+	    static char letters[] = "0123456789abcdefghijklmnopqrstuvwxyzz";
+	    char *t;	    
+
+	    d->utmpId = malloc(5);
+	    strcpy(d->utmpId, UTMPREC_PREFIX);
+	    d->utmpId[4] = '\0';
+	    
+	    t = letters;
+	    
+	    do {
+		if ( firsttime || UtmpIdOpen(d->utmpId)) {
+		    firsttime = 0;
+		    break;
+		}		
+		else {
+		    strncpy(&(d->utmpId[strlen(d->utmpId)]), t++, 1);
+    		}
+	    } while (*t != '\0');
+
+	    if (*t == '\0') {
+		Debug ("All DT utmp IDs already in use. Removing display %s\n",
+			d->name);
+		LogError ((unsigned char *)"All DT utmp IDs already in use. Removing display %s\n",
+			d->name);
+		RemoveDisplay(d);
+		return 0;
+	    }
+	}
+
+	/*
 	 *  set d->gettyLine to "console" for display ":0" if it is not 
 	 *  already set...
 	 */
@@ -970,6 +1009,46 @@ StartDisplay(
 	/* this will only happen when using XDMCP */
         if (d->authorizations)
 	    SaveServerAuthorizations (d, d->authorizations, d->authNum);
+
+ 	/*
+ 	 *  Generate a utmp ID address for a foreign display. Use the last
+ 	 *  four characters of the DISPLAY name, shifting left if they
+ 	 *  are already in use...
+ 	 */
+ 
+#if !defined(CSRG_BASED)
+ 	if (d->utmpId == NULL) {
+ 	    int i;
+ 	    char *p, *q;
+ 	    struct utmp *u;
+ 	    
+ 	    d->utmpId = malloc(sizeof(u->ut_id) +1);
+ 
+ 	    i = strlen (d->name);
+ 	    if (i >= sizeof (u->ut_id))
+ 		i -= sizeof (u->ut_id);
+ 	    else
+ 		i = 0;
+ 
+ 	    for ( p = d->name, q = d->name + i; p <= q; q-- ) {
+ 		(void) strncpy (d->utmpId, q, sizeof (u->ut_id));
+ 		d->utmpId[sizeof(u->ut_id)] = '\0';
+ 		if (UtmpIdOpen(d->utmpId))
+ 		    break;
+ 	    }
+
+#ifdef DEF_NETWORK_DEV
+	    /*
+	     * If "networkDev" does not start with "/dev/" then foreign
+	     * accounting is turned off. Return utmpId to NULL.
+	     */
+            if (networkDev && strncmp(networkDev,"/dev/",5) !=0 ) {
+		free(d->utmpId);
+		d->utmpId = NULL;
+	    }		
+#endif	     
+ 	}
+#endif
     }
 
     if (NULL == d->authFile)
@@ -1058,6 +1137,9 @@ StartDisplay(
                         devname,line);
                 }
             }
+#endif
+#if !defined(CSRG_BASED)
+	    Account(d, "LOGIN", line, getpid(), LOGIN_PROCESS, status);
 #endif
         }
 
@@ -1152,6 +1234,10 @@ StopDisplay( struct display *d )
     }
     else 
         if ((d->displayType.location == Local) || !dt_shutdown ) {
+	    /* don't remove the console */
+#if !defined(CSRG_BASED)
+	    Account(d, NULL, NULL, 0, DEAD_PROCESS, status);
+#endif
 	    RemoveDisplay (d);
 	}	    
 }
@@ -1419,6 +1505,13 @@ StartGetty( struct display *d )
     case 0:
 	CleanUpChild ();
 
+	/*
+	 *  do process accounting...
+	 */
+#if !defined(CSRG_BASED)
+	Account(d, "LOGIN", NULL, getpid(), LOGIN_PROCESS, status);
+#endif
+
 
 	#ifdef _AIX
         /* The tty argument for getty on AIX must be of the form "/dev/any tty"
@@ -1553,7 +1646,101 @@ GettyMessage( struct display *d, int msgnum )
 int 
 GettyRunning( struct display *d )
 {
-    return FALSE;
+#if defined(__FreeBSD__)
+    struct utmpx utmp;		/* local struct for new entry		   */
+    struct utmpx *u;		/* pointer to entry in utmp file	   */
+#else
+    struct utmp utmp;		/* local struct for new entry	   	   */
+    struct utmp *u;		/* pointer to entry in utmp file	   */
+#endif
+    
+    int		rvalue;		/* return value (TRUE or FALSE)		   */
+    char	buf[32];
+        
+    d->gettyState = DM_GETTY_NONE;
+
+    /*
+     * check to see if we have a valid device (at least a non-null name)...
+     */
+
+    if ( d->gettyLine			&& 
+        (strlen(d->gettyLine) > 0)	&&
+	(strcmp(d->gettyLine,"??") != 0)	)
+	;
+    else
+        return FALSE;
+
+
+#if defined(__FreeBSD__)
+    bzero(&utmp, sizeof(struct utmpx));
+#else
+    bzero(&utmp, sizeof(struct utmp));
+#endif
+
+#ifdef _AIX
+   if (!strcmp(d->gettyLine,"console")) {
+        char *ttynm;
+        int fd=0;
+
+        fd = open("/dev/console",O_RDONLY);
+        ttynm = ttyname(fd);
+        ttynm += 5;
+        strcpy(utmp.ut_line,ttynm);
+        close(fd);
+    }
+   else
+     {
+        strncpy(utmp.ut_line, d->gettyLine, sizeof(utmp.ut_line) - 1);
+        utmp.ut_line[sizeof(utmp.ut_line) - 1] = 0;
+     }
+
+#else
+    strncpy(utmp.ut_line, d->gettyLine, sizeof(utmp.ut_line) - 1);
+    utmp.ut_line[sizeof(utmp.ut_line) - 1] = 0;
+#endif
+    
+    Debug("Checking for a getty on line %s.\n", utmp.ut_line);
+    
+#if !defined(CSRG_BASED)
+    setutent();
+
+    rvalue = FALSE;
+    
+    while ( (u = getutent()) != NULL ) {
+    
+        if ((strncmp(u->ut_line, utmp.ut_line, sizeof(u->ut_line)) != 0) ||
+            (strncmp(u->ut_id,   d->utmpId,    sizeof(u->ut_id))   == 0) )
+	    continue;
+
+	switch (u->ut_type) {
+    
+	case INIT_PROCESS:	strcpy(buf, "INIT_PROCESS");	break;
+	case LOGIN_PROCESS:	strcpy(buf, "LOGIN_PROCESS");	break;
+	case USER_PROCESS:	strcpy(buf, "USER_PROCESS");	break;
+	case DEAD_PROCESS:	strcpy(buf, "DEAD_PROCESS");	break;
+	default:		strcpy(buf, "UNKNOWN");		break;
+	}
+
+	Debug("Utmp info: id=%.4s, user=%s, line=%s, pid=%d, type=%s\n",
+	       u->ut_id, u->ut_user, u->ut_line, u->ut_pid, buf);
+
+	if ( u->ut_type == INIT_PROCESS || u->ut_type == LOGIN_PROCESS) {
+          d->gettyState = DM_GETTY_LOGIN;
+        }
+        else if (wakeupTime <= 0 && u->ut_type == USER_PROCESS) {
+          d->gettyState = DM_GETTY_USER;
+        }
+     
+        if (d->gettyState != DM_GETTY_NONE)
+        {
+	    rvalue = TRUE;
+	    break;
+	}
+    }
+
+    endutent();
+#endif /* !CSRG_BASED */
+    return rvalue;
 }
 
 

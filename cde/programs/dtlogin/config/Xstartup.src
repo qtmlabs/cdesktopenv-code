@@ -66,16 +66,5 @@ then
   fi
 fi
 
-#ifdef WTMP_FLAG
-wtmp_flag=WTMP_FLAG
-#else
-wtmp_flag=''
-#endif
 
-#ifdef UTMP_FLAG
-utmp_flag=UTMP_FLAG
-#else
-utmp_flag=''
-#endif
-
-exec SESSREG -a $wtmp_flag $utmp_flag -l $DISPLAY $USER
+		

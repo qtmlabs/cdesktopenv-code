@@ -177,6 +177,11 @@ AC_SUBST(LIBMMDB, '$(top_builddir)/lib/DtMmdb/libDtMmdb.la')
 AC_SUBST(LIBHELP, '$(top_builddir)/lib/DtHelp/libDtHelp.la')
 AC_SUBST(LIBCSA, '$(top_builddir)/lib/csa/libcsa.la')
 
+AC_SUBST(LIBPAMSVC, '$(top_builddir)/lib/DtPamSvc/libDtPamSvc.la')
+
+dnl we do not inclue the DtPamSvc library here as it is not needed
+dnl for everything.
+
 AC_SUBST(DTCLIENTLIBS, '$(LIBPRINT) $(LIBHELP) $(LIBWIDGET) $(LIBSVC) \
 $(LIBTT) $(LIBXIN)')
 
@@ -239,48 +244,6 @@ AC_ARG_ENABLE([xrender],
         AS_HELP_STRING([--disable-xrender], [Disable use of the Xrender extension (default=auto)]),
         [disable_xrender="yes"], [disable_xrender=""]
 )
-
-dnl copied from xdm...
-
-AC_ARG_WITH(utmp_file,
-  AS_HELP_STRING([--with-utmp-file=<pathname>],
-    [specify file to pass to sessreg -u for current logins])
-AS_HELP_STRING([--without-utmp-file],
-    [specify passing "none" to sessreg -u to not record logins in utmp]),
-  [UTMP_FILE="$withval"])
-if test "x$UTMP_FILE" = "xyes" ; then
-  UTMP_FILE=""
-elif test "x$UTMP_FILE" = "xno" ; then
-  UTMP_FILE="none"
-fi
-AC_MSG_CHECKING([for path to file listing current logins for sessreg])
-if test "x$UTMP_FILE" = "x" ; then
-  AC_MSG_RESULT([use sessreg default])
-else
-  AC_MSG_RESULT([$UTMP_FILE])
-fi
-AM_CONDITIONAL(SET_UTMP_FILE, test x$UTMP_FILE != x)
-AC_SUBST(UTMP_FILE)
-
-AC_ARG_WITH(wtmp_file,
-  AS_HELP_STRING([--with-wtmp-file=<pathname>],
-    [specify file to pass to sessreg -w for login history])
-AS_HELP_STRING([--without-wtmp-file],
-    [specify passing "none" to sessreg -w to not record logins in wtmp]),
-  [WTMP_FILE="$withval"])
-if test "x$WTMP_FILE" = "xyes" ; then
-  WTMP_FILE=""
-elif test "x$WTMP_FILE" = "xno" ; then
-  WTMP_FILE="none"
-fi
-AC_MSG_CHECKING([for path to file listing login history for sessreg])
-if test "x$WTMP_FILE" = "x" ; then
-  AC_MSG_RESULT([use sessreg default])
-else
-  AC_MSG_RESULT([$WTMP_FILE])
-fi
-AM_CONDITIONAL(SET_WTMP_FILE, test x$WTMP_FILE != x)
-AC_SUBST(WTMP_FILE)
 
 dnl hmmm...
 RM="rm -f"
@@ -436,10 +399,6 @@ AC_CHECK_PROGS(ONSGMLS, onsgmls)
 if test -z "$ac_cv_prog_ONSGMLS"; then
    MISSING_PROGS="ONSGMLS ${MISSING_PROGS}"
 fi
-AC_CHECK_PROGS(SESSREG, sessreg)
-if test -z "$ac_cv_prog_SESSREG"; then
-   MISSING_PROGS="SESSREG ${MISSING_PROGS}"
-fi
 
 dnl Used to check if program 'tic' is available to install terminfo files
 AC_CHECK_PROGS(TIC, tic, :)
@@ -544,9 +503,7 @@ dnl Right now this only works on linux and netbsd (9.2 tested)
 if test "$supports_pam" = "yes"
 then
         AC_CHECK_LIB(pam, pam_start,
-             [SOURCE_CPP_DEFINES="${SOURCE_CPP_DEFINES} -DHAS_PAM_LIBRARY";
-	      PAMLIB="-lpam"])
-        AC_SUBST(PAMLIB)
+             [SOURCE_CPP_DEFINES="${SOURCE_CPP_DEFINES} -DHAS_PAM_LIBRARY"])
 else
         AC_CHECK_LIB(pam, NOTSUPPORTED)
 fi
@@ -616,6 +573,8 @@ lib/tt/bin/ttdbserverd/Makefile
 lib/tt/bin/ttsession/Makefile
 
 lib/DtSvc/Makefile
+
+lib/DtPamSvc/Makefile
 
 lib/DtSearch/Makefile
 lib/DtSearch/raima/Makefile

@@ -67,6 +67,11 @@
 # include <X11/Xatom.h>
 # include <X11/Xmu/Error.h>
 # include <setjmp.h>
+#if defined(__FreeBSD__) || defined(HAS_PAM_LIBRARY)
+# include <utmpx.h>
+#else
+# include <utmp.h>
+#endif
 #include <unistd.h>
 #include <pwd.h>
 #include <dirent.h>
@@ -99,8 +104,7 @@
 #endif
 
 #ifdef HAS_PAM_LIBRARY
-#include <security/pam_appl.h>
-#include <Dt/SvcPam.h>
+#include <Dt/PamSvc.h>
 #endif
 
 int ApplyFontPathMods(struct display *d, Display *dpy); // fontpath.c
@@ -166,8 +170,7 @@ struct greet_state {
 };
 
 char *globalDisplayName;
-extern char *progPath;	/* dtlogin path */
-extern char *progName;	/* dtlogin name */
+extern char *progName;	/* Global argv[0]; dtlogin name and path */
 
 /***************************************************************************
  *
@@ -311,10 +314,9 @@ SessionPingFailed( struct display *d )
 #endif
 
 #if !defined(sun) && defined(HAS_PAM_LIBRARY)
-    _DtSvcPamCloseSession(progName, user, d->name);
+    Account(d, user, NULL, clientPid, DEAD_PROCESS, 0);
 #endif
     }
-
     SessionExit (d, RESERVER_DISPLAY);
 }
 
@@ -637,7 +639,7 @@ ManageSession( struct display *d )
 #endif
 
 #if !defined(sun) && defined(HAS_PAM_LIBRARY)
-    _DtSvcPamCloseSession(progName, user, d->name);
+    Account(d, user, NULL, clientPid, DEAD_PROCESS, 0);
 #endif
 
     SessionExit (d, OBEYSESS_DISPLAY);
@@ -1184,8 +1186,6 @@ StartClient( struct verify_info *verify, struct display *d, int *pidp )
     long	ngroups, groups[NGROUPS];
 #endif /* __AFS */
 
-    gid_t gid;
-
     if (verify->argv) {
 	Debug ("StartSession %s: ", verify->argv[0]);
 	for (f = verify->argv; *f; f++) {
@@ -1267,8 +1267,8 @@ StartClient( struct verify_info *verify, struct display *d, int *pidp )
 	}
 #endif
 
-#if !defined(sun) && defined(HAS_PAM_LIBRARY)
-	_DtSvcPamOpenSession(progName, user, d->name);
+#if !defined(sun) && (!defined(CSRG_BASED) || defined(HAS_PAM_LIBRARY))
+	Account(d, user, NULL, getpid(), USER_PROCESS, 0);
 #endif
 
 #ifdef AIXV3
@@ -1350,32 +1350,16 @@ StartClient( struct verify_info *verify, struct display *d, int *pidp )
 	    return(0);
 	} 
 #elif defined(HAS_PAM_LIBRARY)
+    char *prog_name = strrchr(progName, '/');
+    if (!prog_name || _DtSetCred(prog_name + 1, user, verify->uid,
 #ifdef NGROUPS
-	gid = verify->groups[0];
+                verify->groups[0]
 #else
-	gid = verify->gid;
+                verify->gid
 #endif
-
-	if (setgid(gid) == -1) {
-	    Debug("setgid %d (user \"%s\") failed: %s\n",
-		gid, user, strerror(errno));
-	    return 0;
-	}
-
-	if (initgroups(user, gid) == -1) {
-	    Debug("initgroups for \"%s\" failed: %s\n", user, strerror(errno));
-	    return 0;
-	}
-
-	if (setuid(verify->uid) == -1) {
-	    Debug("setuid %d (user \"%s\") failed: %s\n",
-		verify->uid, user, strerror(errno));
-	    return 0;
-	}
-
-	if (_DtSvcPamSetcred(progName, user, d->name) != PAM_SUCCESS) {
-	    Debug("Can't set User's Credentials (user=%s)\n",user);
-	    return 0;
+                ) > 0 ) {
+            Debug("Can't set User's Credentials (user=%s)\n",user);
+	    return(0);
 	}
 #endif
 
@@ -2026,7 +2010,13 @@ RunGreeter( struct display *d, struct greet_info *greet,
 	     * figure out path to dtgreet...
 	     */
 
-	    snprintf(msg, sizeof(msg), "%s", progPath);
+	    snprintf(msg, sizeof(msg), "%s", progName);
+    
+	    if ((p = (char *) strrchr(msg, '/')) == NULL)
+		strcpy(msg,"./");
+	    else
+		*(++p) = '\0';
+
 	    strcat(msg,"dtgreet");
 
 	    execle(msg, "dtgreet", "-display", d->name, (char *)0, env);
