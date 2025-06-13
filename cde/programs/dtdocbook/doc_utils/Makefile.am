@@ -28,7 +28,7 @@ AM_CPPFLAGS += \
 	      -DINFOLIB_LIBEXECDIR=\"$(PWD)\"
 
 validator_SOURCES = validator.C
-validator_LDFLAGS = $(LIBMMDB) $(LMDBLIB)
+validator_LDFLAGS = $(AM_LDFLAGS) $(LIBMMDB) $(LMDBLIB)
 
 CLEANFILES = $(noinst_SCRIPTS) $(validator_SOURCES) dtdocbook2infolib.c
 

@@ -44,7 +44,7 @@ endif
 
 if AIX
 dtksh_CPPFLAGS += -D_IBMRPC_
-dtksh_LDFLAGS = -bE:dtksh.exp
+dtksh_LDFLAGS = $(AM_LDFLAGS) -bE:dtksh.exp
 endif
 
 dtksh_SOURCES = init.c \
