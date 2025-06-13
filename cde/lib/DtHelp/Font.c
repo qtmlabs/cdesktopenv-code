@@ -253,11 +253,93 @@ static  const char    *FontResources[] =
     "*.12.*.*.*.*.IBM-1046: -dt-interface user-medium-r-normal-l*-*-*-*-*-*-*-*-*:",
     "*.14.*.*.*.*.IBM-1046: -dt-interface user-medium-r-normal-xl*-*-*-*-*-*-*-*-*:",
 /* for UTF-8 */
-    "*.6.*.*.*.*.UTF-8:  -dt-interface user-medium-r-normal-xs*-*-*-*-*-*-*-*-*:",
-    "*.8.*.*.*.*.UTF-8:  -dt-interface user-medium-r-normal-s*-*-*-*-*-*-*-*-*:",
-    "*.10.*.*.*.*.UTF-8: -dt-interface user-medium-r-normal-m*-*-*-*-*-*-*-*-*:",
-    "*.12.*.*.*.*.UTF-8: -dt-interface user-medium-r-normal-l*-*-*-*-*-*-*-*-*:",
-    "*.14.*.*.*.*.UTF-8: -dt-interface user-medium-r-normal-xl*-*-*-*-*-*-*-*-*:",
+/*! The serif proportional family */
+/*! medium upright */
+    "*p.6.roman.medium.serif.*.UTF-8:  -dt-application-medium-r-normal-serif-*-80-*-*-p-*-*-*:",
+    "*p.8.roman.medium.serif.*.UTF-8:  -dt-application-medium-r-normal-serif-*-100-*-*-p-*-*-*:",
+    "*p.10.roman.medium.serif.*.UTF-8: -dt-application-medium-r-normal-serif-*-120-*-*-p-*-*-*:",
+    "*p.12.roman.medium.serif.*.UTF-8: -dt-application-medium-r-normal-serif-*-140-*-*-p-*-*-*:",
+    "*p.14.roman.medium.serif.*.UTF-8: -dt-application-medium-r-normal-serif-*-180-*-*-p-*-*-*:",
+
+/*! bold upright */
+    "*p.6.roman.bold.serif.*.UTF-8:  -dt-application-bold-r-normal-serif-*-80-*-*-p-*-*-*:",
+    "*p.8.roman.bold.serif.*.UTF-8:  -dt-application-bold-r-normal-serif-*-100-*-*-p-*-*-*:",
+    "*p.10.roman.bold.serif.*.UTF-8: -dt-application-bold-r-normal-serif-*-120-*-*-p-*-*-*:",
+    "*p.12.roman.bold.serif.*.UTF-8: -dt-application-bold-r-normal-serif-*-140-*-*-p-*-*-*:",
+    "*p.14.roman.bold.serif.*.UTF-8: -dt-application-bold-r-normal-serif-*-180-*-*-p-*-*-*:",
+
+/*! medium italic */
+    "*p.6.italic.medium.serif.*.UTF-8:  -dt-application-medium-i-normal-serif-*-80-*-*-p-*-*-*:",
+    "*p.8.italic.medium.serif.*.UTF-8:  -dt-application-medium-i-normal-serif-*-100-*-*-p-*-*-*:",
+    "*p.10.italic.medium.serif.*.UTF-8: -dt-application-medium-i-normal-serif-*-120-*-*-p-*-*-*:",
+    "*p.12.italic.medium.serif.*.UTF-8: -dt-application-medium-i-normal-serif-*-140-*-*-p-*-*-*:",
+    "*p.14.italic.medium.serif.*.UTF-8: -dt-application-medium-i-normal-serif-*-180-*-*-p-*-*-*:",
+
+/*! bold italic */
+    "*p.6.italic.bold.serif.*.UTF-8:  -dt-application-bold-i-normal-serif-*-80-*-*-p-*-*-*:",
+    "*p.8.italic.bold.serif.*.UTF-8:  -dt-application-bold-i-normal-serif-*-100-*-*-p-*-*-*:",
+    "*p.10.italic.bold.serif.*.UTF-8: -dt-application-bold-i-normal-serif-*-120-*-*-p-*-*-*:",
+    "*p.12.italic.bold.serif.*.UTF-8: -dt-application-bold-i-normal-serif-*-140-*-*-p-*-*-*:",
+    "*p.14.italic.bold.serif.*.UTF-8: -dt-application-bold-i-normal-serif-*-180-*-*-p-*-*-*:",
+
+/*! The sans serif proportional family */
+/*! medium upright */
+    "*p.6.roman.medium.sans_serif.*.UTF-8:  -dt-application-medium-r-normal-sans-*-80-*-*-p-*-*-*:",
+    "*p.8.roman.medium.sans_serif.*.UTF-8:  -dt-application-medium-r-normal-sans-*-100-*-*-p-*-*-*:",
+    "*p.10.roman.medium.sans_serif.*.UTF-8: -dt-application-medium-r-normal-sans-*-120-*-*-p-*-*-*:",
+    "*p.12.roman.medium.sans_serif.*.UTF-8: -dt-application-medium-r-normal-sans-*-140-*-*-p-*-*-*:",
+    "*p.14.roman.medium.sans_serif.*.UTF-8: -dt-application-medium-r-normal-sans-*-180-*-*-p-*-*-*:",
+
+/*!bold upright */
+    "*p.6.roman.bold.sans_serif.*.UTF-8:  -dt-application-bold-r-normal-sans-*-80-*-*-p-*-*-*:",
+    "*p.8.roman.bold.sans_serif.*.UTF-8:  -dt-application-bold-r-normal-sans-*-100-*-*-p-*-*-*:",
+    "*p.10.roman.bold.sans_serif.*.UTF-8: -dt-application-bold-r-normal-sans-*-120-*-*-p-*-*-*:",
+    "*p.12.roman.bold.sans_serif.*.UTF-8: -dt-application-bold-r-normal-sans-*-140-*-*-p-*-*-*:",
+    "*p.14.roman.bold.sans_serif.*.UTF-8: -dt-application-bold-r-normal-sans-*-180-*-*-p-*-*-*:",
+
+/*! medium italic */
+    "*p.6.italic.medium.sans_serif.*.UTF-8:  -dt-application-medium-i-normal-sans-*-80-*-*-p-*-*-*:",
+    "*p.8.italic.medium.sans_serif.*.UTF-8:  -dt-application-medium-i-normal-sans-*-100-*-*-p-*-*-*:",
+    "*p.10.italic.medium.sans_serif.*.UTF-8: -dt-application-medium-i-normal-sans-*-120-*-*-p-*-*-*:",
+    "*p.12.italic.medium.sans_serif.*.UTF-8: -dt-application-medium-i-normal-sans-*-140-*-*-p-*-*-*:",
+    "*p.14.italic.medium.sans_serif.*.UTF-8: -dt-application-medium-i-normal-sans-*-180-*-*-p-*-*-*:",
+
+/*! bold italic */
+    "*p.6.italic.bold.sans_serif.*.UTF-8:  -dt-application-bold-i-normal-sans-*-80-*-*-p-*-*-*:",
+    "*p.8.italic.bold.sans_serif.*.UTF-8:  -dt-application-bold-i-normal-sans-*-100-*-*-p-*-*-*:",
+    "*p.10.italic.bold.sans_serif.*.UTF-8: -dt-application-bold-i-normal-sans-*-120-*-*-p-*-*-*:",
+    "*p.12.italic.bold.sans_serif.*.UTF-8: -dt-application-bold-i-normal-sans-*-140-*-*-p-*-*-*:",
+    "*p.14.italic.bold.sans_serif.*.UTF-8: -dt-application-bold-i-normal-sans-*-180-*-*-p-*-*-*:",
+
+/*! The monospace family - lump serif & sans serif together */
+/*! medium upright */
+    "*m.6.roman.medium.*.*.UTF-8:  -dt-application-medium-r-normal-*-*-80-*-*-m-*-*-*:",
+    "*m.8.roman.medium.*.*.UTF-8:  -dt-application-medium-r-normal-*-*-100-*-*-m-*-*-*:",
+    "*m.10.roman.medium.*.*.UTF-8: -dt-application-medium-r-normal-*-*-120-*-*-m-*-*-*:",
+    "*m.12.roman.medium.*.*.UTF-8: -dt-application-medium-r-normal-*-*-140-*-*-m-*-*-*:",
+    "*m.14.roman.medium.*.*.UTF-8: -dt-application-medium-r-normal-*-*-180-*-*-m-*-*-*:",
+
+/*! bold upright */
+    "*m.6.roman.bold.*.*.UTF-8:  -dt-application-bold-r-normal-*-*-80-*-*-m-*-*-*:",
+    "*m.8.roman.bold.*.*.UTF-8:  -dt-application-bold-r-normal-*-*-100-*-*-m-*-*-*:",
+    "*m.10.roman.bold.*.*.UTF-8: -dt-application-bold-r-normal-*-*-120-*-*-m-*-*-*:",
+    "*m.12.roman.bold.*.*.UTF-8: -dt-application-bold-r-normal-*-*-140-*-*-m-*-*-*:",
+    "*m.14.roman.bold.*.*.UTF-8: -dt-application-bold-r-normal-*-*-180-*-*-m-*-*-*:",
+
+/*! medium italic */
+    "*m.6.italic.medium.*.*.UTF-8:  -dt-application-medium-i-normal-*-*-80-*-*-m-*-*-*:",
+    "*m.8.italic.medium.*.*.UTF-8:  -dt-application-medium-i-normal-*-*-100-*-*-m-*-*-*:",
+    "*m.10.italic.medium.*.*.UTF-8: -dt-application-medium-i-normal-*-*-120-*-*-m-*-*-*:",
+    "*m.12.italic.medium.*.*.UTF-8: -dt-application-medium-i-normal-*-*-140-*-*-m-*-*-*:",
+    "*m.14.italic.medium.*.*.UTF-8: -dt-application-medium-i-normal-*-*-180-*-*-m-*-*-*:",
+
+/*! bold italic */
+    "*m.6.italic.bold.*.*.UTF-8:  -dt-application-bold-i-normal-*-*-80-*-*-m-*-*-*:",
+    "*m.8.italic.bold.*.*.UTF-8:  -dt-application-bold-i-normal-*-*-100-*-*-m-*-*-*:",
+    "*m.10.italic.bold.*.*.UTF-8: -dt-application-bold-i-normal-*-*-120-*-*-m-*-*-*:",
+    "*m.12.italic.bold.*.*.UTF-8: -dt-application-bold-i-normal-*-*-140-*-*-m-*-*-*:",
+    "*m.14.italic.bold.*.*.UTF-8: -dt-application-bold-i-normal-*-*-180-*-*-m-*-*-*:",
+
     NULL,
   };
 
