@@ -1942,6 +1942,8 @@ RunGreeter( struct display *d, struct greet_info *greet,
                 GettyRunning(d); /* refresh gettyState */
 		if (d->gettyState != DM_GETTY_USER)
 		    env = setEnv(env, LOCATION, "local");
+		if (strcmp(d->gettyLine, "??") == 0)
+		    env = setEnv(env, YESWINDOWS, "True");
 	    }
 	    else {
 		sprintf(msg,"%d", d->pingInterval);

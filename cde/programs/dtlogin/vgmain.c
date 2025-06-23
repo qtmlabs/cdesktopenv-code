@@ -1983,7 +1983,7 @@ if ( session_menu != NULL ) {
 */
     }
 
-    if ( getenv(PINGINTERVAL) != NULL )
+    if ( getenv(PINGINTERVAL) != NULL || getenv(YESWINDOWS) != NULL )
 	XtUnmanageChild(options_nowindows);
 	
 

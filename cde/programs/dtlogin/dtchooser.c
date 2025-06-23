@@ -1006,7 +1006,7 @@ MakeOptionsMenu( void )
 */
     }
 
-    if ( getenv(PINGINTERVAL) != NULL )
+    if ( getenv(PINGINTERVAL) != NULL || getenv(YESWINDOWS) != NULL )
 	XtUnmanageChild(options_nowindows);
 	
 
