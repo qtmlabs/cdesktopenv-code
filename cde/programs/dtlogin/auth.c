@@ -1053,7 +1053,7 @@ writeRemoteAuth (FILE *file, Xauth *auth, XdmcpNetaddr peer, int peerlen, char *
     if (family != FamilyLocal)
     {
 	Debug ("writeRemoteAuth: %d, %d, %x\n",
-		family, peerlen, *(int *)addr);
+		family, peerlen, addr ? *(int *)addr : 0);
 	writeAddr (family, peerlen, addr, file, auth);
     }
     else
