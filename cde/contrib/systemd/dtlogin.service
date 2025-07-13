@@ -5,7 +5,7 @@ After=systemd-user-sessions.service
 After=plymouth-quit-wait.service
 After=rc-local.service
 
-Requires=rpcbind.socket
+Wants=rpcbind.socket
 After=rpcbind.socket
 
 [Service]
